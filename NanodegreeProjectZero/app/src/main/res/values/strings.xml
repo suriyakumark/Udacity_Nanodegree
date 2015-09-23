@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">My Nanodegree Portfolio</string>
+
+    <string name="Top_Label">My Nanodegree Apps</string>
+    <string name="App_01">Spotify Streamer</string>
+    <string name="App_02">Football Scores</string>
+    <string name="App_03">Library</string>
+    <string name="App_04">Build It Bigger</string>
+    <string name="App_05">XYZ Reader</string>
+    <string name="App_06">Capstone: My Own App</string>
+    <string name="ToastPrefix">This button will launch </string>
+    <string name="action_settings">Settings</string>
+</resources>
