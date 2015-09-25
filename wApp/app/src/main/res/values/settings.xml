@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="App_Settings_File">wAppSettingsFile</string>
+
+    <string name="Api_Default_Location">27606,us</string>
+    <string name="Api_Default_Unit">metric</string>
+    <string name="Api_Default_Count">7</string>
+    <string name="Api_Default_ApiId">24b37b69d5d87b8c92a65e23bc145ccc</string>
+
+    <string name="Api_Var_Location">$srch</string>
+    <string name="Api_Var_Unit">$unit</string>
+    <string name="Api_Var_Count">$cnt</string>
+    <string name="Api_Var_ApiId">$apiid</string>
+
+    <string name="Api_Url">http://api.openweathermap.org/data/2.5/forecast/daily?&amp;zip=$srch&amp;units=$unit&amp;cnt=$cnt&amp;APPID=$apiid</string>
+</resources>
