@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is the fragment for detail screen -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:http="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
+    tools:context=".MainActivity$DetailFragment">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <!-- scrollview can have only one child directly, so use a wrapper layout -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+
+                <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="16dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/movie_poster" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="left">
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    style="@style/LabelStyle"
+                    android:text="@string/label_plot" />
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    style="@style/DescStyle"
+                    android:id="@+id/movie_desc" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="left">
+
+                    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                        style="@style/LabelStyle"
+                        android:text="@string/label_rating" />
+                    <RatingBar
+                        android:id="@+id/movie_rating"
+                        style="@style/RatingBarStyle" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="left">
+
+                    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                        style="@style/LabelStyle"
+                        android:text="@string/label_release_date" />
+                    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                        style="@style/TextStyle"
+                        android:id="@+id/movie_releasedate" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
