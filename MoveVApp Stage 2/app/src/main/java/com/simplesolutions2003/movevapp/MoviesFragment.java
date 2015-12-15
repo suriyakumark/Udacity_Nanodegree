@@ -51,7 +51,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private MoviesAdapter mMoviesAdapter;
     private GridView gridView;
     private int mPosition = GridView.INVALID_POSITION;
-    private String sortType = "default";
+    private String sortType = "most_popular";
     private static final String SELECTED_KEY = "selected_position";
     boolean mTwoPane = false;
     static final String BASE_THUMB_IMAGE_URL = new String("http://image.tmdb.org/t/p/w342/");
