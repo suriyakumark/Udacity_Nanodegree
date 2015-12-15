@@ -8,5 +8,5 @@
     <string name="label_plot">Plot:\u0020\u0020 </string>
     <string name="label_rating">Rating:\u0020\u0020 </string>
     <string name="label_release_date">Release Date:\u0020\u0020 </string>
-    <string name="api_key">a27edd9440e25ef9fed6a62aa94124ea</string>
+    <string name="api_key"></string>
 </resources>
