@@ -123,6 +123,7 @@ public class MoveVAppService extends IntentService{
                 sort_by = "vote_count.desc";
                 break;
             default:
+                sortType = "most_popular";
                 sort_by = "popularity.desc";
                 break;
         }
