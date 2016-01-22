@@ -1,24 +1,48 @@
 package barqsoft.footballscores;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.support.v4.app.ActivityCompat;
 
 public class MainActivity extends ActionBarActivity
 {
     public static int selected_match_id;
-    public static int current_fragment = 2;
+    public static int current_fragment = 3
+            ;
     public static String LOG_TAG = "MainActivity";
     private final String save_tag = "Save Test";
     private PagerFragment my_main;
+    private final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(LOG_TAG, "Reached MainActivity onCreate");
+        Log.d(LOG_TAG, "Build.VERSION.SDK_INT/M " + Build.VERSION.SDK_INT+":"+Build.VERSION_CODES.M);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+                    != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BIND_REMOTEVIEWS)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{
+                                Manifest.permission.INTERNET,
+                                Manifest.permission.BIND_REMOTEVIEWS
+                        }, REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            }
+        }
+
         if (savedInstanceState == null) {
             my_main = new PagerFragment();
             getSupportFragmentManager().beginTransaction()

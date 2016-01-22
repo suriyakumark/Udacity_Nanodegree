@@ -22,18 +22,20 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import barqsoft.footballscores.DatabaseContract;
+import barqsoft.footballscores.data.DatabaseContract;
 import barqsoft.footballscores.R;
 
 /**
  * Created by yehya khaled on 3/2/2015.
  */
-public class myFetchService extends IntentService
+// Class name should start with caps
+public class MyFetchService extends IntentService
 {
-    public static final String LOG_TAG = "myFetchService";
-    public myFetchService()
+    //Good practise to use class.getSimpleName()
+    public static final String LOG_TAG = MyFetchService.class.getSimpleName();
+    public MyFetchService()
     {
-        super("myFetchService");
+        super("MyFetchService");
     }
 
     @Override
@@ -63,12 +65,19 @@ public class myFetchService extends IntentService
             URL fetch = new URL(fetch_build.toString());
             m_connection = (HttpURLConnection) fetch.openConnection();
             m_connection.setRequestMethod("GET");
-            m_connection.addRequestProperty("X-Auth-Token",getString(R.string.api_key));
+            m_connection.addRequestProperty("X-Auth-Token", getString(R.string.api_key));
             m_connection.connect();
+
+            Log.v(LOG_TAG, "m_connection :  " + m_connection.getURL() + " " + m_connection.getResponseCode());
+            if (m_connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                Log.v(LOG_TAG,"m_connection : " + m_connection.getErrorStream());
+                return;
+            }
 
             // Read the input stream into a String
             InputStream inputStream = m_connection.getInputStream();
             StringBuffer buffer = new StringBuffer();
+
             if (inputStream == null) {
                 // Nothing to do.
                 return;
@@ -90,7 +99,8 @@ public class myFetchService extends IntentService
         }
         catch (Exception e)
         {
-            Log.e(LOG_TAG,"Exception here" + e.getMessage());
+            e.printStackTrace();
+            Log.v(LOG_TAG,"Exception here " + e.getMessage());
         }
         finally {
             if(m_connection != null)
@@ -108,6 +118,7 @@ public class myFetchService extends IntentService
                 }
             }
         }
+        Log.v(LOG_TAG,"m_connection : " + JSON_data);
         try {
             if (JSON_data != null) {
                 //This bit is to check if the data contains any matches. If not, we call processJson on the dummy data

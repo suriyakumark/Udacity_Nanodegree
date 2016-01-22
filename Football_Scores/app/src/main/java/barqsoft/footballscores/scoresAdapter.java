@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,10 @@ import android.widget.TextView;
 /**
  * Created by yehya khaled on 2/26/2015.
  */
-public class scoresAdapter extends CursorAdapter
+// Class name should start with caps
+public class ScoresAdapter extends CursorAdapter
 {
+    private static final String LOG_TAG = ScoresAdapter.class.getSimpleName();
     public static final int COL_HOME = 3;
     public static final int COL_AWAY = 4;
     public static final int COL_HOME_GOALS = 6;
@@ -26,7 +29,7 @@ public class scoresAdapter extends CursorAdapter
     public static final int COL_MATCHTIME = 2;
     public double detail_match_id = 0;
     private String FOOTBALL_SCORES_HASHTAG = "#Football_Scores";
-    public scoresAdapter(Context context,Cursor cursor,int flags)
+    public ScoresAdapter(Context context,Cursor cursor,int flags)
     {
         super(context,cursor,flags);
     }
@@ -63,7 +66,7 @@ public class scoresAdapter extends CursorAdapter
         ViewGroup container = (ViewGroup) view.findViewById(R.id.details_fragment_container);
         if(mHolder.match_id == detail_match_id)
         {
-            //Log.v(FetchScoreTask.LOG_TAG,"will insert extraView");
+            Log.v(LOG_TAG, "will insert extraView");
 
             container.addView(v, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                     , ViewGroup.LayoutParams.MATCH_PARENT));

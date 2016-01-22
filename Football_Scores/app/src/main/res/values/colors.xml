@@ -76,5 +76,8 @@
     <color name="red13">#FFCACA</color>
     <color name="red14">#FFE4E4</color>
 
+    <color name="widget_bg">#556DA000</color>
+    <color name="widget_border">#886DA000</color>
+    <color name="widget_item">#776DA000</color>
 
 </resources>
