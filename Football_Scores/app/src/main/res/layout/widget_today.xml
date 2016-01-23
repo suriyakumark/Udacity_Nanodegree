@@ -16,8 +16,8 @@
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
             android:layout_gravity="center"
+            android:contentDescription="@string/widget_text"
             android:src="@drawable/ic_launcher"
             />
         <TextView
@@ -25,10 +25,20 @@
             android:layout_width="0dp"
             android:layout_weight="0.7"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="start|center_vertical"
+            android:paddingLeft="8dp"
             android:text="@string/widget_text"
+            android:contentDescription="@string/cd_widget"
             android:textStyle="bold" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/widgetTextLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/widget_loading"
+        android:contentDescription=""
+        android:textStyle="italic" />
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

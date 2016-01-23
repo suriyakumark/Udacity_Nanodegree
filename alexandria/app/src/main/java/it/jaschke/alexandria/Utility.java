@@ -1,8 +1,10 @@
 package it.jaschke.alexandria;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.Display;
 
 /**
  * Created by Suriya on 1/10/2016.

@@ -68,6 +68,7 @@ public class MyFetchService extends IntentService
             m_connection.addRequestProperty("X-Auth-Token", getString(R.string.api_key));
             m_connection.connect();
 
+            //added some logic to handle error in a better way
             Log.v(LOG_TAG, "m_connection :  " + m_connection.getURL() + " " + m_connection.getResponseCode());
             if (m_connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 Log.v(LOG_TAG,"m_connection : " + m_connection.getErrorStream());

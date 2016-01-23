@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Binder;
 import android.os.Build;
 import android.util.Log;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -19,7 +21,7 @@ import java.util.Date;
 
 import barqsoft.footballscores.MainScreenFragment;
 import barqsoft.footballscores.R;
-import barqsoft.footballscores.Utilies;
+import barqsoft.footballscores.Utilities;
 import barqsoft.footballscores.data.DatabaseContract;
 
 /**
@@ -59,7 +61,8 @@ public class ScoresWidgetRemoteViewsService extends RemoteViewsService {
 
                 final long identityToken = Binder.clearCallingIdentity();
 
-                Date fragmentdate = new Date(System.currentTimeMillis()+((1)*86400000));
+                //Widget shows only today's data.
+                Date fragmentdate = new Date(System.currentTimeMillis()+((0)*86400000));
                 SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
                 Log.v(LOG_TAG, "fragmentdate - " + fragmentdate);
                 data = getContentResolver().query(DatabaseContract.scores_table.buildScoreWithDate(),
@@ -87,15 +90,21 @@ public class ScoresWidgetRemoteViewsService extends RemoteViewsService {
                         data == null || !data.moveToPosition(position)) {
                     return null;
                 }
+
                 RemoteViews views = new RemoteViews(getPackageName(),
                         R.layout.widget_scores_list);
 
-                Log.v(LOG_TAG, "COL_HOME - " + data.getString(COL_HOME));
-
                 views.setTextViewText(R.id.home_name, data.getString(COL_HOME));
+                views.setContentDescription(R.id.home_name, getString(R.string.cd_home_name) + data.getString(COL_HOME));
+
                 views.setTextViewText(R.id.away_name, data.getString(COL_AWAY));
+                views.setContentDescription(R.id.away_name, getString(R.string.cd_away_name) + data.getString(COL_AWAY));
+
                 views.setTextViewText(R.id.data_textview, data.getString(COL_MATCHTIME));
-                views.setTextViewText(R.id.score_textview, Utilies.getScores(data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS)));
+                views.setContentDescription(R.id.data_textview, getString(R.string.cd_time) + data.getString(COL_MATCHTIME));
+
+                views.setTextViewText(R.id.score_textview, Utilities.getScores(data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS),getApplicationContext()));
+                views.setContentDescription(R.id.score_textview, getString(R.string.cd_scores) + Utilities.getScores(data.getInt(COL_HOME_GOALS), data.getInt(COL_AWAY_GOALS),getApplicationContext()));
 
                 final Intent fillInIntent = new Intent();
                 fillInIntent.setData(DatabaseContract.scores_table.buildScoreWithDate());

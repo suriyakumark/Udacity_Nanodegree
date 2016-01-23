@@ -19,15 +19,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:id="@+id/home_crest"/>
+                android:id="@+id/away_crest"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="@dimen/TeamNames"
                 android:gravity="center"
-                android:id="@+id/home_name"/>
+                android:textSize="@dimen/TeamNames"
+                android:id="@+id/away_name"/>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -59,14 +60,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:id="@+id/away_crest"/>
+                android:id="@+id/home_crest"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
                 android:textSize="@dimen/TeamNames"
-                android:id="@+id/away_name"/>
+                android:gravity="center"
+                android:id="@+id/home_name"/>
         </LinearLayout>
     </LinearLayout>
     <FrameLayout

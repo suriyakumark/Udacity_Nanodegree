@@ -36,7 +36,29 @@
                 android:id="@+id/scan_button"/>
 
         </LinearLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/cameraContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="8dp"
+            android:visibility="gone"
+            android:orientation="vertical"
+            android:layout_below="@+id/eancontainer">
 
+            <FrameLayout
+                android:id="@+id/cameraPreview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <View
+                    android:id="@+id/cameraBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/camera_box"/>
+            </FrameLayout>
+
+        </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +68,7 @@
             android:textStyle="bold"
             android:layout_marginTop="25dp"
             android:paddingRight="20dp"
-            android:layout_below="@+id/eancontainer"
+            android:layout_below="@+id/cameraContainer"
             android:layout_alignLeft="@+id/eancontainer"
             android:layout_alignStart="@+id/eancontainer"/>
 

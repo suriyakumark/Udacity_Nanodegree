@@ -11,17 +11,18 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1"
-            android:textColor="@android:color/black"
             android:textSize="@dimen/League"
-            android:id="@+id/league_textview"/>
+            android:textColor="@android:color/black"
+            android:id="@+id/matchday_textview"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1"
-            android:textSize="@dimen/League"
             android:textColor="@android:color/black"
-            android:id="@+id/matchday_textview"/>
+            android:textSize="@dimen/League"
+            android:id="@+id/league_textview"/>
+
     </LinearLayout>
     <FrameLayout
         android:layout_width="match_parent"

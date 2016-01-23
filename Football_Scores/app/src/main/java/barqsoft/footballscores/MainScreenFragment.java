@@ -27,6 +27,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public static final int SCORES_LOADER = 0;
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
+    private ListView score_list;
 
     public MainScreenFragment()
     {
@@ -46,10 +47,12 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                              final Bundle savedInstanceState) {
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
+        //To fix default selection in list when navigating page tab strip
+        score_list = (ListView) rootView.findViewById(R.id.scores_list);
         mAdapter = new ScoresAdapter(getActivity(),null,0);
         score_list.setAdapter(mAdapter);
         getLoaderManager().initLoader(SCORES_LOADER, null, this);
+        score_list.setContentDescription(getString(R.string.cd_app_launch));
         mAdapter.detail_match_id = MainActivity.selected_match_id;
 
         score_list.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -76,26 +79,13 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor)
     {
-        //Log.v(FetchScoreTask.LOG_TAG,"loader finished");
-        //cursor.moveToFirst();
-        /*
-        while (!cursor.isAfterLast())
-        {
-            Log.v(FetchScoreTask.LOG_TAG,cursor.getString(1));
-            cursor.moveToNext();
-        }
-        */
-
-        int i = 0;
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast())
-        {
-            i++;
-            cursor.moveToNext();
-        }
-        //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
         mAdapter.swapCursor(cursor);
-        //mAdapter.notifyDataSetChanged();
+        //To fix default selection in list when navigating page tab strip
+        Log.v(LOG_TAG, "Scores List Clear Focus");
+        score_list.smoothScrollToPosition(0);
+        score_list.clearFocus();
+        score_list.setSelection(0);
+
     }
 
     @Override

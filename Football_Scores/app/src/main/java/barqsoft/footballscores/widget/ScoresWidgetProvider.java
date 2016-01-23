@@ -9,8 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.format.Time;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import barqsoft.footballscores.MainActivity;
 import barqsoft.footballscores.R;
@@ -22,6 +27,8 @@ import barqsoft.footballscores.R;
 public class ScoresWidgetProvider extends AppWidgetProvider {
 
     private static final String LOG_TAG = ScoresWidgetProvider.class.getSimpleName();
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -42,9 +49,12 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
                 setRemoteAdapterV11(context, remoteViews);
             }
 
+            remoteViews.setTextViewText(R.id.widgetTextLoading, context.getString(R.string.widget_loaded) + sdf.format(new Date()));
             appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
+
         }
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.scores_list);
+
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 

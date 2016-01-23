@@ -7,8 +7,11 @@ package it.jaschke.alexandria.CameraPreview;
  */
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -16,19 +19,22 @@ import java.io.IOException;
 
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+    private static final String LOG_TAG = CameraPreview.class.getSimpleName();
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private Camera.PreviewCallback previewCallback;
     private Camera.AutoFocusCallback autoFocusCallback;
-
-    public CameraPreview(Context context, Camera camera,
+    private int mScreenRotation;
+    public CameraPreview(Context context,
+                         Camera  camera,
                          Camera.PreviewCallback previewCb,
-                         Camera.AutoFocusCallback autoFocusCb) {
+                         Camera.AutoFocusCallback autoFocusCb,
+                         int screenRotation) {
         super(context);
         mCamera = camera;
         previewCallback = previewCb;
         autoFocusCallback = autoFocusCb;
-
+        mScreenRotation = screenRotation;
         /*
          * Set camera to continuous focus if supported, otherwise use
          * software auto-focus. Only works for API level >=9.
@@ -85,14 +91,30 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         try {
             // Hard code camera surface rotation 90 degs to match Activity view in portrait
-            mCamera.setDisplayOrientation(90);
-
+            //mCamera.setDisplayOrientation(90);
+            setCameraOrientation(mScreenRotation);
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(previewCallback);
             mCamera.startPreview();
-            mCamera.autoFocus(autoFocusCallback);
+
+            //To fix app crashing issue in my SONY device
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mCamera.autoFocus(autoFocusCallback);
+                }
+            }, 200); //<-200 millisecond delay
+
+            //mCamera.autoFocus(autoFocusCallback);
         } catch (Exception e){
             Log.d("DBG", "Error starting camera preview: " + e.getMessage());
         }
     }
-}
+
+    public void setCameraOrientation(int angle){
+        Log.v(LOG_TAG, "Orientation - " + angle);
+        mCamera.setDisplayOrientation(angle);
+    }
+
+ }
