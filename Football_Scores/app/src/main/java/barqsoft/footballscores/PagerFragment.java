@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.util.Date;
  */
 public class PagerFragment extends Fragment
 {
+    private static final String LOG_TAG = PagerFragment.class.getSimpleName();
     public static final int NUM_PAGES = 5;
     public ViewPager mPagerHandler;
     private myPageAdapter mPagerAdapter;
@@ -30,15 +32,27 @@ public class PagerFragment extends Fragment
         View rootView = inflater.inflate(R.layout.pager_fragment, container, false);
         mPagerHandler = (ViewPager) rootView.findViewById(R.id.pager);
         mPagerAdapter = new myPageAdapter(getChildFragmentManager());
+        int j = 0;
         for (int i = 0;i < NUM_PAGES;i++)
         {
-            Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
+
+            if(Utilities.isRightToLeft(getActivity())){
+                j = NUM_PAGES - i - 1;
+            }else{
+                j = i;
+            }
+            Log.v(LOG_TAG, "i " + i + " ; j "+ j);
+
+            Date fragmentdate = new Date(System.currentTimeMillis()+((j-2)*86400000));
             SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
             viewFragments[i] = new MainScreenFragment();
             viewFragments[i].setFragmentDate(mformat.format(fragmentdate));
+            Log.v(LOG_TAG, "onCreateView - " + mformat.format(fragmentdate));
         }
+
         mPagerHandler.setAdapter(mPagerAdapter);
         mPagerHandler.setCurrentItem(MainActivity.current_fragment);
+
         return rootView;
     }
     private class myPageAdapter extends FragmentStatePagerAdapter
@@ -63,6 +77,9 @@ public class PagerFragment extends Fragment
         @Override
         public CharSequence getPageTitle(int position)
         {
+            if(Utilities.isRightToLeft(getActivity())){
+                position = NUM_PAGES - position - 1;
+            }
             return getDayName(getActivity(),System.currentTimeMillis()+((position-2)*86400000));
         }
         public String getDayName(Context context, long dateInMillis) {

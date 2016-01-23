@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/widget_bg"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/widget"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/widget_text"
+            android:src="@drawable/ic_launcher"
+            />
+        <TextView
+            android:id="@+id/widgetText"
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:paddingLeft="8dp"
+            android:text="@string/widget_text"
+            android:contentDescription="@string/cd_widget"
+            android:textStyle="bold" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/widgetTextLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/widget_loading"
+        android:contentDescription=""
+        android:textStyle="italic" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id = "@+id/scores_list"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="5sp"
+            tools:listitem="@layout/widget_scores_list"/>
+    </FrameLayout>
+</LinearLayout>

@@ -7,6 +7,8 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <!-- bug with pager tab strip in 23.0.1, so use 23.1.0 -->
+        <!-- bug : initially page title will not be displayed -->
         <android.support.v4.view.PagerTabStrip
             android:id="@+id/pager_header"
             android:layout_width="match_parent"
