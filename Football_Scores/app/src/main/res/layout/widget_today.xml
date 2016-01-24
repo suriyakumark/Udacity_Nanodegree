@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:paddingLeft="8dp"
+            android:paddingStart="8dp"
             android:text="@string/widget_text"
             android:contentDescription="@string/cd_widget"
             android:textStyle="bold" />
