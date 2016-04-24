@@ -1,0 +1,94 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    publishNonDefault true
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    defaultConfig {
+        applicationId "com.simplesolutions2003.builditbigger"
+        minSdkVersion 10
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors{
+        free {
+            applicationId "com.simplesolutions2003.builtitbigger.free"
+        }
+        paid {
+            applicationId "com.simplesolutions2003.builtitbigger.paid"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            returnDefaultValues = true
+        }
+    }
+}
+
+dependencies {
+    //had to comment fileTree as the build failed due to too many to process and android studio has limitations
+    //compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile project(':jokeslibrary')
+    compile project(path: ':gce_module', configuration: 'android-endpoints')
+
+    //required only for free version
+    freeCompile 'com.google.android.gms:play-services-ads:8.3.0'
+
+    //required for androidTest
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support:support-annotations:23.3.0'
+    androidTestCompile 'org.hamcrest:hamcrest-core:1.3'
+
+}
+
+//Run the task testBIB to do the following;
+//1.start app engine
+//2.run a test to check if asynctask retrieves non-empty joke
+//3.shutdown app engine
+
+task testBIB {
+    dependsOn(['startAppEngine','runTest1','runTest2','shutdownAppEngine'])
+}
+
+task startAppEngine {
+    dependsOn ':gce_module:appengineRun'
+    evaluationDependsOn(":gce_module")
+    project(':gce_module').appengine.daemon = true
+}
+
+task runTest1 {
+    dependsOn ':app:connectedFreeDebugAndroidTest'
+    mustRunAfter "startAppEngine"
+}
+
+task runTest2 {
+    dependsOn ':app:connectedPaidDebugAndroidTest'
+    mustRunAfter "runTest1"
+}
+
+task shutdownAppEngine {
+    dependsOn ':gce_module:appengineStop'
+    mustRunAfter "runTest2"
+
+}
+
+//build.dependsOn testBIB
