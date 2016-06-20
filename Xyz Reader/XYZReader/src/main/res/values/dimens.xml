@@ -9,4 +9,9 @@
     <dimen name="fab_margin">24dp</dimen>
     <dimen name="fab_size">56dp</dimen>
 
+    <dimen name="card_margin">4dp</dimen>
+    <dimen name="card_title_padding">16dp</dimen>
+    <dimen name="card_title_padding_bottom">4dp</dimen>
+    <dimen name="card_subtitle_padding">16dp</dimen>
+
 </resources>
