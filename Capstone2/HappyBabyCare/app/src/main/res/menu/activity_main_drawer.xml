@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/nav_baby_care_category">
+        <menu>
+            <item
+                android:id="@+id/nav_activities"
+                android:icon="@drawable/ic_menu_activities"
+                android:title="Activities" />
+            <item
+                android:id="@+id/nav_feeding"
+                android:icon="@drawable/ic_menu_feeding"
+                android:title="Feeding" />
+            <item
+                android:id="@+id/nav_diaper"
+                android:icon="@drawable/ic_menu_diaper"
+                android:title="Diaper" />
+            <item
+                android:id="@+id/nav_sleeping"
+                android:icon="@drawable/ic_menu_sleeping"
+                android:title="Sleeping" />
+            <item
+                android:id="@+id/nav_health"
+                android:icon="@drawable/ic_menu_health"
+                android:title="Health" />
+        </menu>
+    </item>
+    <item android:title="@string/nav_essentials_category">
+        <menu>
+            <item
+                android:id="@+id/nav_stories"
+                android:icon="@drawable/ic_menu_stories"
+                android:title="Stories" />
+            <item
+                android:id="@+id/nav_rhymes"
+                android:icon="@drawable/ic_menu_rhymes"
+                android:title="Rhymes" />
+            <item
+                android:id="@+id/nav_sounds"
+                android:icon="@drawable/ic_menu_sounds"
+                android:title="Sounds" />
+        </menu>
+    </item>
+        <item
+            android:id="@+id/nav_settings"
+            android:title="Settings" />
+        <item
+            android:id="@+id/nav_signout"
+            android:title="Sign Out" />
+</menu>

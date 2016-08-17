@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_baby_profile"
+        android:orderInCategory="80"
+        android:title="@string/action_baby_profile"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_manage_group"
+        android:orderInCategory="90"
+        android:title="@string/action_manage_group"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_select_baby"
+        app:showAsAction="ifRoom"
+        android:title="@string/action_select_baby"
+        app:actionViewClass="android.widget.Spinner"  />
+</menu>

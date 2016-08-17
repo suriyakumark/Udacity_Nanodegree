@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Happy Baby Care</string>
+
+    <string name="nav_baby_care_category">Baby Care</string>
+    <string name="nav_baby_care_activities">Activities</string>
+    <string name="nav_baby_care_feeding">Feeding</string>
+    <string name="nav_baby_care_diaper">Diaper</string>
+    <string name="nav_baby_care_sleeping">Sleeping</string>
+    <string name="nav_baby_care_health">Health</string>
+
+    <string name="nav_essentials_category">Essentials</string>
+    <string name="nav_essentials_stories">Stories</string>
+    <string name="nav_essentials_rhymes">Rhymes</string>
+    <string name="nav_essentials_sounds">Sounds</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_baby_profile">Baby Profiles</string>
+    <string name="action_manage_group">Manage Group</string>
+    <string name="action_select_baby">Select Baby</string>
+</resources>

@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "146656922502",
+    "project_id": "happy-baby-care"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146656922502:android:dd21b1c785885e19",
+        "android_client_info": {
+          "package_name": "com.simplesolutions2003.happybabycare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5GPVCquIhmbse-wUwozr6bc8kpbK2nTc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-82496432-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
