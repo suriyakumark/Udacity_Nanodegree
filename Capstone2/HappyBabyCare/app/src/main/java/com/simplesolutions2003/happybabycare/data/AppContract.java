@@ -66,7 +66,7 @@ public class AppContract {
 
         public static final String TABLE_NAME = "user";
 
-        public static final String COLUMN_ID = "_id";
+        public static final String _ID = "_id";
         public static final String COLUMN_EMAIL = "email";
         public static final String COLUMN_PASSWORD = "password";
         public static final String COLUMN_ACTIVE = "active";
@@ -120,12 +120,9 @@ public class AppContract {
 
         public static final String TABLE_NAME = "sync_log";
 
-        public static final String COLUMN_ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
-        public static final String COLUMN_SYNC_TS = "sync_timestamp";
-        public static final String COLUMN_REQUEST_TYPE = "request_type";
-        public static final String COLUMN_REQUEST_IN = "request_in";
-        public static final String COLUMN_REQUEST_OUT = "request_out";
+        public static final String COLUMN_TABLE = "table";
+        public static final String COLUMN_LAST_SYNC_TS = "last_sync_timestamp";
 
         public static Uri buildSyncLogUri(long user_id) {
             return ContentUris.withAppendedId(CONTENT_URI, user_id);
@@ -148,7 +145,7 @@ public class AppContract {
 
         public static final String TABLE_NAME = "baby";
 
-        public static final String COLUMN_ID = "_id";
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_GENDER = "gender";
@@ -194,8 +191,12 @@ public class AppContract {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
         }
 
-        public static long getBabyIdFromUri(Uri uri) {
+        public static long getUserIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(3));
         }
 
     }
@@ -224,8 +225,12 @@ public class AppContract {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
         }
 
-        public static long getBabyIdFromUri(Uri uri) {
+        public static long getUserIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(3));
         }
     }
 
@@ -253,8 +258,12 @@ public class AppContract {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
         }
 
-        public static long getBabyIdFromUri(Uri uri) {
+        public static long getUserIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(3));
         }
     }
 
@@ -282,8 +291,12 @@ public class AppContract {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
         }
 
-        public static long getBabyIdFromUri(Uri uri) {
+        public static long getUserIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(3));
         }
     }
 
@@ -298,7 +311,7 @@ public class AppContract {
 
         public static final String TABLE_NAME = "article";
 
-        public static final String COLUMN_ID = "_id";
+        public static final String _ID = "_id";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_CATEGORY = "category";
         public static final String COLUMN_TITLE = "title";
@@ -308,8 +321,19 @@ public class AppContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        public static Uri buildArticleByTypeUri(String articleType) {
+            return CONTENT_URI.buildUpon().appendPath(articleType).build();
+        }
+
         public static long getArticleIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getArticleTypeFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("TYPE")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
         }
     }
 
@@ -336,6 +360,7 @@ public class AppContract {
         public static long getArticleIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
+
     }
 
     public static final class MediaEntry implements BaseColumns {
@@ -349,7 +374,7 @@ public class AppContract {
 
         public static final String TABLE_NAME = "media";
 
-        public static final String COLUMN_ID = "_id";
+        public static final String _ID = "_id";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_PATH = "path";
 
