@@ -19,4 +19,8 @@
     <string name="action_baby_profile">Baby Profiles</string>
     <string name="action_manage_group">Manage Group</string>
     <string name="action_select_baby">Select Baby</string>
+
+    <string name="text_sign_in">Please sign in to continue</string>
+
 </resources>
+

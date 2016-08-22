@@ -1,9 +1,13 @@
 package com.simplesolutions2003.happybabycare;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,9 +22,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.Status;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    private final static String LOG_TAG = MainActivity.class.getSimpleName();
+    public static boolean USER_LOGGED_IN = false;
+    public static DrawerLayout drawer = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -36,16 +45,37 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if(!USER_LOGGED_IN){
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            Fragment fragment = new SignInFragment();
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, fragment)
+                    .commit();
+        }else{
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }
+
     }
 
     @Override
     public void onBackPressed() {
+        Log.i(LOG_TAG, "popping backstack");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            FragmentManager fm = getFragmentManager();
+            if (fm.getBackStackEntryCount() > 0) {
+                Log.i(LOG_TAG, "popping backstack");
+                fm.popBackStack();
+            } else {
+                Log.i(LOG_TAG, "nothing on backstack, calling super");
+                super.onBackPressed();
+            }
         }
+
     }
 
     @Override
@@ -97,32 +127,76 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        switch(id) {
-            case R.id.nav_activities:
-                break;
-            case R.id.nav_feeding:
-                break;
-            case R.id.nav_diaper:
-                break;
-            case R.id.nav_sleeping:
-                break;
-            case R.id.nav_health:
-                break;
-            case R.id.nav_stories:
-                break;
-            case R.id.nav_rhymes:
-                break;
-            case R.id.nav_sounds:
-                break;
-            case R.id.nav_settings:
-                break;
-            case R.id.nav_signout:
-                break;
-        }
-
+        boolean addFragmentToStack = false;
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        Fragment fragment = null;
+        switch(id) {
+            case R.id.nav_activities:
+                fragment = new ActivitiesFragment();
+                addFragmentToStack = true;
+                break;
+            case R.id.nav_feeding:
+                fragment = new FeedingFragment();
+                break;
+            case R.id.nav_diaper:
+                fragment = new DiaperFragment();
+                break;
+            case R.id.nav_sleeping:
+                fragment = new SleepingFragment();
+                break;
+            case R.id.nav_health:
+                fragment = new HealthFragment();
+                break;
+            case R.id.nav_stories:
+                fragment = new StoriesFragment();
+                addFragmentToStack = true;
+                break;
+            case R.id.nav_rhymes:
+                fragment = new RhymesFragment();
+                addFragmentToStack = true;
+                break;
+            case R.id.nav_sounds:
+                fragment = new SoundsFragment();
+                break;
+            case R.id.nav_settings:
+                //setContentView(R.layout.settings);
+                break;
+            case R.id.nav_signout:
+                SignInFragment.ACTION_SIGN_OUT = true;
+                fragment = new SignInFragment();
+                break;
+        }
+        if (fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            if(addFragmentToStack) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }else{
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .commit();
+            }
+            //setTitle(navMenuTitles[position]);
+        } else {
+            // error in creating fragment
+            Log.e("MainActivity", "Error in creating fragment");
+        }
         return true;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == SignInFragment.RC_SIGN_IN) {
+            SignInFragment fragment = (SignInFragment) getFragmentManager()
+                    .findFragmentById(R.id.sign_in_layout);
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
 }

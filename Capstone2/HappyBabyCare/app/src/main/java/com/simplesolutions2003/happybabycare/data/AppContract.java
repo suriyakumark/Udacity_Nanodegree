@@ -37,19 +37,30 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SETTINGS;
 
         public static final String TABLE_NAME = "settings";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_VERSION = "version";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_VALUE = "value";
         public static final String COLUMN_ACTIVE = "active";
         public static final String COLUMN_UPDATED_TS = "updated_timestamp";
 
-        public static Uri buildSettingsUri(long version) {
-            return ContentUris.withAppendedId(CONTENT_URI, version);
+        public static Uri buildSettingsUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getVersionFromUri(Uri uri) {
+        public static Uri buildSettingsByVersionUri(String version) {
+            return CONTENT_URI.buildUpon().appendPath("VERSION").appendPath(version).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getVersionFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("VERSION")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
         }
 
     }
@@ -67,19 +78,29 @@ public class AppContract {
         public static final String TABLE_NAME = "user";
 
         public static final String _ID = "_id";
-        public static final String COLUMN_EMAIL = "email";
+        public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_PASSWORD = "password";
         public static final String COLUMN_ACTIVE = "active";
         public static final String COLUMN_LAST_SYNC_TS = "last_sync_timestamp";
 
-        public static Uri buildUserUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildUserUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildUserByUserIdUri(String userId) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(userId).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
     }
 
     public static final class UserPreferenceEntry implements BaseColumns {
@@ -93,17 +114,28 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_USER_PREF;
 
         public static final String TABLE_NAME = "user_preference";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_VALUE = "value";
 
-        public static Uri buildUserPreferenceUri(long user_id) {
-            return ContentUris.withAppendedId(CONTENT_URI, user_id);
+        public static Uri buildUserPreferenceUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildUserByUserIdUri(String userId) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(userId).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
         }
 
     }
@@ -119,17 +151,28 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SYNC_LOG;
 
         public static final String TABLE_NAME = "sync_log";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_TABLE = "table";
         public static final String COLUMN_LAST_SYNC_TS = "last_sync_timestamp";
 
-        public static Uri buildSyncLogUri(long user_id) {
-            return ContentUris.withAppendedId(CONTENT_URI, user_id);
+        public static Uri buildSyncLogUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildSyncLogByUserIdUri(String userId) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(userId).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
         }
     }
 
@@ -147,6 +190,7 @@ public class AppContract {
 
         public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
+        public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_GENDER = "gender";
         public static final String COLUMN_BIRTH_DATE = "birth_date";
@@ -155,12 +199,34 @@ public class AppContract {
         public static final String COLUMN_PHOTO = "photo";
         public static final String COLUMN_ACTIVE = "active";
 
-        public static Uri buildBabyUri(long user_id) {
-            return ContentUris.withAppendedId(CONTENT_URI, user_id);
+        public static Uri buildBabyUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildBabyByUserIdUri(String userId) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(userId).build();
+        }
+
+        public static Uri buildBabyByUserIdBabyIdUri(String userId, Long babyId) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(userId).appendPath("BABY").appendPath(Long.toString(babyId)).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(4).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(5));
+            }
+            return -1;
         }
 
     }
@@ -176,7 +242,7 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FEEDING;
 
         public static final String TABLE_NAME = "feeding";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_TIMESTAMP = "timestamp";
@@ -187,16 +253,31 @@ public class AppContract {
         public static final String COLUMN_DURATION = "duration";
         public static final String COLUMN_NOTES = "notes";
 
-        public static Uri buildFeedingUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
+        public static Uri buildFeedingUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildFeedingByUserIdBabyIdUri(long user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        }
+
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
         public static long getBabyIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(3));
+            if(uri.getPathSegments().get(4).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(5));
+            }
+            return -1;
         }
 
     }
@@ -211,7 +292,7 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DIAPER;
 
         public static final String TABLE_NAME = "diaper";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_TIMESTAMP = "timestamp";
@@ -221,16 +302,30 @@ public class AppContract {
         public static final String COLUMN_CREAM = "cream";
         public static final String COLUMN_NOTES = "notes";
 
-        public static Uri buildDiaperUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
+        public static Uri buildDiaperUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildDiaperByUserIdBabyIdUri(long user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
         public static long getBabyIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(3));
+            if(uri.getPathSegments().get(4).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(5));
+            }
+            return -1;
         }
     }
 
@@ -244,7 +339,7 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SLEEPING;
 
         public static final String TABLE_NAME = "sleeping";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_TIMESTAMP = "timestamp";
@@ -254,16 +349,30 @@ public class AppContract {
         public static final String COLUMN_WHERE = "where";
         public static final String COLUMN_NOTES = "notes";
 
-        public static Uri buildSleepingUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
+        public static Uri buildSleepingUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildSleepingByUserIdBabyIdUri(long user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
         public static long getBabyIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(3));
+            if(uri.getPathSegments().get(4).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(5));
+            }
+            return -1;
         }
     }
 
@@ -277,7 +386,7 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_HEALTH;
 
         public static final String TABLE_NAME = "health";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_TIMESTAMP = "timestamp";
@@ -287,16 +396,44 @@ public class AppContract {
         public static final String COLUMN_VALUE = "value";
         public static final String COLUMN_NOTES = "notes";
 
-        public static Uri buildHealthUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(user_id)).appendPath(Long.toString(baby_id)).build();
+        public static Uri buildHealthUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getUserIdFromUri(Uri uri) {
+        public static Uri buildHealthByUserBabyUri(long user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        }
+
+        public static Uri buildActivitiesByUserBabyUri(long user_id, long baby_id) {
+            return BASE_CONTENT_URI.buildUpon().appendPath("ACTIVITIES").appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("USER")) {
+                return uri.getPathSegments().get(3);
+            }
+            if(uri.getPathSegments().get(2).equals("ACTIVITIES")){
+                if(uri.getPathSegments().get(3).equals("USER")) {
+                    return uri.getPathSegments().get(4);
+                }
+            }
+            return null;
+        }
+
         public static long getBabyIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(3));
+            if(uri.getPathSegments().get(4).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(5));
+            }
+            if(uri.getPathSegments().get(2).equals("ACTIVITIES")){
+                if(uri.getPathSegments().get(5).equals("USER")) {
+                    return Long.parseLong(uri.getPathSegments().get(6));
+                }
+            }
+            return -1;
         }
     }
 
@@ -310,27 +447,37 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ARTICLE;
 
         public static final String TABLE_NAME = "article";
-
         public static final String _ID = "_id";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_CATEGORY = "category";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_LAST_UPDATED_TS = "last_updated_timestamp";
 
-        public static Uri buildArticleUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildArticleUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
         public static Uri buildArticleByTypeUri(String articleType) {
-            return CONTENT_URI.buildUpon().appendPath(articleType).build();
+            return CONTENT_URI.buildUpon().appendPath("TYPE").appendPath(articleType).build();
         }
 
-        public static long getArticleIdFromUri(Uri uri) {
+        public static Uri buildArticleByCategoryUri(String articleCategory) {
+            return CONTENT_URI.buildUpon().appendPath("CATEGORY").appendPath(articleCategory).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 
         public static String getArticleTypeFromUri(Uri uri) {
             if(uri.getPathSegments().get(2).equals("TYPE")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
+        public static String getArticleCategoryFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("CATEGORY")) {
                 return uri.getPathSegments().get(3);
             }
             return null;
@@ -347,18 +494,38 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ARTICLE_DETAIL;
 
         public static final String TABLE_NAME = "article_detail";
-
+        public static final String _ID = "_id";
         public static final String COLUMN_ARTICLE_ID = "article_id";
         public static final String COLUMN_SEQUENCE = "sequence";
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_CONTENT = "content";
 
-        public static Uri buildArticleDetailUri(long article_id) {
-            return ContentUris.withAppendedId(CONTENT_URI, article_id);
+        public static Uri buildArticleDetailUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
+        }
+
+        public static Uri buildArticleDetailByArticleIdUri(long article_id) {
+            return CONTENT_URI.buildUpon().appendPath("ARTICLE").appendPath(Long.toString(article_id)).build();
+        }
+
+        public static Uri buildArticleWithDetailByArticleIdUri(long article_id) {
+            return CONTENT_URI.buildUpon().appendPath("ARTICLE").appendPath("DETAIL").appendPath(Long.toString(article_id)).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(2));
         }
 
         public static long getArticleIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            if(uri.getPathSegments().get(2).equals("ARTICLE")) {
+                if(uri.getPathSegments().get(3).equals("DETAIL")) {
+                    return Long.parseLong(uri.getPathSegments().get(4));
+                }else{
+                    return Long.parseLong(uri.getPathSegments().get(3));
+                }
+            }else{
+                return -1;
+            }
         }
 
     }
@@ -376,14 +543,37 @@ public class AppContract {
 
         public static final String _ID = "_id";
         public static final String COLUMN_TYPE = "type";
+        public static final String COLUMN_CATEGORY = "category";
         public static final String COLUMN_PATH = "path";
 
-        public static Uri buildMediaUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildMediaUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static long getMediaIdFromUri(Uri uri) {
+        public static Uri buildMediaByTypeUri(String mediaType) {
+            return CONTENT_URI.buildUpon().appendPath("TYPE").appendPath(mediaType).build();
+        }
+
+        public static Uri buildMediaByCategoryUri(String mediaCategory) {
+            return CONTENT_URI.buildUpon().appendPath("CATEGORY").appendPath(mediaCategory).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
             return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getMediaTypeFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("TYPE")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
+        }
+
+        public static String getMediaCategoryFromUri(Uri uri) {
+            if(uri.getPathSegments().get(2).equals("CATEGORY")) {
+                return uri.getPathSegments().get(3);
+            }
+            return null;
         }
     }
 

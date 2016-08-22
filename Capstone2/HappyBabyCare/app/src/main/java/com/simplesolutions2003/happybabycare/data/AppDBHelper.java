@@ -37,50 +37,53 @@ public class AppDBHelper extends SQLiteOpenHelper  {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         final String SQL_CREATE_SETTINGS_TABLE = "CREATE TABLE " + SettingsEntry.TABLE_NAME + " (" +
-                SettingsEntry.COLUMN_VERSION + " INTEGER," +
-                SettingsEntry.COLUMN_TYPE + " TEXT, " +
+                SettingsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SettingsEntry.COLUMN_VERSION + " TEXT NOT NULL," +
+                SettingsEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
                 SettingsEntry.COLUMN_VALUE + " TEXT, " +
                 SettingsEntry.COLUMN_ACTIVE + " INTEGER, " +
                 SettingsEntry.COLUMN_UPDATED_TS + " TIMESTAMP, " +
 
-                " PRIMARY KEY (" + SettingsEntry.COLUMN_VERSION + ", " + SettingsEntry.COLUMN_TYPE + ")" +
-                " );";
+                " UNIQUE (" + SettingsEntry.COLUMN_VERSION + ", "
+                            + SettingsEntry.COLUMN_TYPE + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + UserEntry.TABLE_NAME + " (" +
-                UserEntry._ID + " INTEGER," +
-                UserEntry.COLUMN_EMAIL + " TEXT NOT NULL, " +
-                UserEntry.COLUMN_PASSWORD + " TEXT, " +
+                UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                UserEntry.COLUMN_USER_ID + " TEXT NOT NULL, " +
+                UserEntry.COLUMN_PASSWORD + " TEXT NOT NULL, " +
                 UserEntry.COLUMN_ACTIVE + " INTEGER, " +
                 UserEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
 
-                " PRIMARY KEY (" + UserEntry._ID + ")," +
-
-                " UNIQUE (" + UserEntry.COLUMN_EMAIL + ") ON CONFLICT REPLACE);";
-
+                " UNIQUE (" + UserEntry.COLUMN_USER_ID + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_USER_PREF_TABLE = "CREATE TABLE " + UserPreferenceEntry.TABLE_NAME + " (" +
-                UserPreferenceEntry.COLUMN_USER_ID + " INTEGER," +
+                UserPreferenceEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                UserPreferenceEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 UserPreferenceEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
                 UserPreferenceEntry.COLUMN_VALUE + " TEXT, " +
 
-                " PRIMARY KEY (" + UserPreferenceEntry.COLUMN_USER_ID + ", " + UserPreferenceEntry.COLUMN_TYPE +  ")," +
+                " UNIQUE (" + UserPreferenceEntry.COLUMN_USER_ID + ", "
+                            + UserPreferenceEntry.COLUMN_TYPE +  ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + UserPreferenceEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ");";
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + "));";
 
         final String SQL_CREATE_SYNC_LOG_TABLE = "CREATE TABLE " + SyncLogEntry.TABLE_NAME + " (" +
-                UserPreferenceEntry.COLUMN_USER_ID + " INTEGER," +
+                SyncLogEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SyncLogEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 SyncLogEntry.COLUMN_TABLE + " TEXT NOT NULL, " +
                 SyncLogEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
 
-                " PRIMARY KEY (" + SyncLogEntry.COLUMN_USER_ID + ", " + SyncLogEntry.COLUMN_TABLE + ")," +
+                " UNIQUE (" + SyncLogEntry.COLUMN_USER_ID + ", "
+                            + SyncLogEntry.COLUMN_TABLE + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + UserPreferenceEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ");";
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + "));";
 
         final String SQL_CREATE_BABY_TABLE = "CREATE TABLE " + BabyEntry.TABLE_NAME + " (" +
-                BabyEntry._ID + " INTEGER," +
-                BabyEntry.COLUMN_USER_ID + " INTEGER NOT NULL, " +
+                BabyEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                BabyEntry.COLUMN_USER_ID + " TEXT NOT NULL, " +
+                BabyEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 BabyEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 BabyEntry.COLUMN_GENDER + " TEXT NOT NULL, " +
                 BabyEntry.COLUMN_BIRTH_DATE + " DATE, " +
@@ -89,15 +92,15 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 BabyEntry.COLUMN_PHOTO + " TEXT, " +
                 BabyEntry.COLUMN_ACTIVE + " INTEGER, " +
 
-                " PRIMARY KEY (" + BabyEntry._ID + ")," +
-
                 " FOREIGN KEY (" + BabyEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")," +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
-                " UNIQUE (" + BabyEntry.COLUMN_USER_ID + "," + BabyEntry.COLUMN_NAME + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + BabyEntry.COLUMN_USER_ID + ","
+                            + BabyEntry.COLUMN_BABY_ID + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_FEEDING_TABLE = "CREATE TABLE " + FeedingEntry.TABLE_NAME + " (" +
-                FeedingEntry.COLUMN_USER_ID + " INTEGER NOT NULL," +
+                FeedingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                FeedingEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 FeedingEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 FeedingEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
                 FeedingEntry.COLUMN_DATE + " DATE, " +
@@ -107,18 +110,19 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 FeedingEntry.COLUMN_DURATION + " INTEGER, " +
                 FeedingEntry.COLUMN_NOTES + " TEXT, " +
 
-                " PRIMARY KEY (" + FeedingEntry.COLUMN_USER_ID + "," +
-                                    FeedingEntry.COLUMN_BABY_ID + "," +
-                                    FeedingEntry.COLUMN_TIMESTAMP + ")," +
+                " UNIQUE (" + FeedingEntry.COLUMN_USER_ID + "," +
+                FeedingEntry.COLUMN_BABY_ID + "," +
+                FeedingEntry.COLUMN_TIMESTAMP + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + FeedingEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")," +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + FeedingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + ");";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
 
         final String SQL_CREATE_DIAPER_TABLE = "CREATE TABLE " + DiaperEntry.TABLE_NAME + " (" +
-                DiaperEntry.COLUMN_USER_ID + " INTEGER NOT NULL," +
+                DiaperEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DiaperEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 DiaperEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 DiaperEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
                 DiaperEntry.COLUMN_DATE + " DATE, " +
@@ -127,18 +131,19 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 DiaperEntry.COLUMN_CREAM + " TEXT, " +
                 DiaperEntry.COLUMN_NOTES + " TEXT, " +
 
-                " PRIMARY KEY (" + DiaperEntry.COLUMN_USER_ID + "," +
+                " UNIQUE (" + DiaperEntry.COLUMN_USER_ID + "," +
                 DiaperEntry.COLUMN_BABY_ID + "," +
-                DiaperEntry.COLUMN_TIMESTAMP + ")," +
+                DiaperEntry.COLUMN_TIMESTAMP + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + DiaperEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")," +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + FeedingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + ");";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
 
         final String SQL_CREATE_SLEEPING_TABLE = "CREATE TABLE " + SleepingEntry.TABLE_NAME + " (" +
-                SleepingEntry.COLUMN_USER_ID + " INTEGER NOT NULL," +
+                SleepingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SleepingEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 SleepingEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 SleepingEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
                 SleepingEntry.COLUMN_DATE + " DATE, " +
@@ -147,18 +152,19 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 SleepingEntry.COLUMN_WHERE + " TEXT, " +
                 SleepingEntry.COLUMN_NOTES + " TEXT, " +
 
-                " PRIMARY KEY (" + SleepingEntry.COLUMN_USER_ID + "," +
+                " UNIQUE (" + SleepingEntry.COLUMN_USER_ID + "," +
                 SleepingEntry.COLUMN_BABY_ID + "," +
-                SleepingEntry.COLUMN_TIMESTAMP + ")," +
+                SleepingEntry.COLUMN_TIMESTAMP + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + SleepingEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")," +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + SleepingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + ");";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
 
         final String SQL_CREATE_HEALTH_TABLE = "CREATE TABLE " + HealthEntry.TABLE_NAME + " (" +
-                HealthEntry.COLUMN_USER_ID + " INTEGER NOT NULL," +
+                HealthEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                HealthEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 HealthEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 HealthEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
                 HealthEntry.COLUMN_DATE + " DATE, " +
@@ -167,40 +173,41 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 HealthEntry.COLUMN_VALUE + " TEXT, " +
                 HealthEntry.COLUMN_NOTES + " TEXT, " +
 
-                " PRIMARY KEY (" + HealthEntry.COLUMN_USER_ID + "," +
+                " UNIQUE (" + HealthEntry.COLUMN_USER_ID + "," +
                 HealthEntry.COLUMN_BABY_ID + "," +
-                HealthEntry.COLUMN_TIMESTAMP + ")," +
+                HealthEntry.COLUMN_TIMESTAMP + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + HealthEntry.COLUMN_USER_ID + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")," +
+                UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + HealthEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + ");";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
 
         final String SQL_CREATE_ARTICLE_TABLE = "CREATE TABLE " + ArticleEntry.TABLE_NAME + " (" +
-                ArticleEntry._ID + " INTEGER," +
+                ArticleEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ArticleEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_CATEGORY + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-                ArticleEntry.COLUMN_LAST_UPDATED_TS + " TIMESTAMP, " +
-
-                " PRIMARY KEY (" + ArticleEntry._ID + ");";
+                ArticleEntry.COLUMN_LAST_UPDATED_TS + " TIMESTAMP);";
 
         final String SQL_CREATE_ARTICLE_DETAIL_TABLE = "CREATE TABLE " + ArticleDetailEntry.TABLE_NAME + " (" +
+                ArticleEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ArticleDetailEntry.COLUMN_ARTICLE_ID + " INTEGER," +
                 ArticleDetailEntry.COLUMN_SEQUENCE + " TEXT NOT NULL, " +
                 ArticleDetailEntry.COLUMN_TYPE + " TEXT, " +
                 ArticleDetailEntry.COLUMN_CONTENT + " TEXT, " +
 
-                " PRIMARY KEY (" + ArticleDetailEntry.COLUMN_ARTICLE_ID + ");";
+                " UNIQUE (" + ArticleDetailEntry.COLUMN_ARTICLE_ID + "," +
+                ArticleDetailEntry.COLUMN_SEQUENCE + ") ON CONFLICT REPLACE," +
+
+                " FOREIGN KEY (" + ArticleDetailEntry.COLUMN_ARTICLE_ID + ") REFERENCES " +
+                ArticleEntry.TABLE_NAME + " (" + ArticleEntry._ID + "));";
 
         final String SQL_CREATE_MEDIA_TABLE = "CREATE TABLE " + MediaEntry.TABLE_NAME + " (" +
-                MediaEntry._ID + " INTEGER," +
+                MediaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 MediaEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
-                MediaEntry.COLUMN_PATH + " TEXT, " +
-
-
-                " PRIMARY KEY (" + MediaEntry._ID + ");";
+                MediaEntry.COLUMN_CATEGORY + " TEXT NOT NULL, " +
+                MediaEntry.COLUMN_PATH + " TEXT);";
 
         Log.v(LOG_TAG, "SQL_CREATE_SETTING_TABLE" + SQL_CREATE_SETTINGS_TABLE);
         Log.v(LOG_TAG, "SQL_CREATE_USER_TABLE" + SQL_CREATE_USER_TABLE);
