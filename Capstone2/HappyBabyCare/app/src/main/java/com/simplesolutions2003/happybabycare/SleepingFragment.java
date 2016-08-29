@@ -10,6 +10,9 @@ import android.view.ViewGroup;
  * Created by SuriyaKumar on 8/20/2016.
  */
 public class SleepingFragment extends Fragment {
+    public final static boolean KEEP_IN_STACK = false;
+    public final static String TAG = SleepingFragment.class.getSimpleName();
+
     public SleepingFragment(){}
 
     @Override

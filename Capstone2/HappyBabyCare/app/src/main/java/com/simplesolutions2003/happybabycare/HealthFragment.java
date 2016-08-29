@@ -10,6 +10,9 @@ import android.view.ViewGroup;
  * Created by SuriyaKumar on 8/20/2016.
  */
 public class HealthFragment extends Fragment {
+    public final static boolean KEEP_IN_STACK = false;
+    public final static String TAG = HealthFragment.class.getSimpleName();
+
     public HealthFragment(){}
 
     @Override

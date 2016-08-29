@@ -632,32 +632,32 @@ public class AppProvider extends ContentProvider {
         matcher.addURI(authority, AppContract.PATH_SETTINGS, SETTINGS);
         matcher.addURI(authority, AppContract.PATH_SETTINGS + "/VERSION/", SETTINGS_BY_VERSION);
         matcher.addURI(authority, AppContract.PATH_USER, USER);
-        matcher.addURI(authority, AppContract.PATH_USER + "/USER/", USER_BY_USERID);
+        matcher.addURI(authority, AppContract.PATH_USER + "/USER/*", USER_BY_USERID);
         matcher.addURI(authority, AppContract.PATH_USER_PREF, USER_PREF);
-        matcher.addURI(authority, AppContract.PATH_USER_PREF + "/USER/", USER_PREF_BY_USERID);
+        matcher.addURI(authority, AppContract.PATH_USER_PREF + "/USER/*", USER_PREF_BY_USERID);
         matcher.addURI(authority, AppContract.PATH_SYNC_LOG, SYNC_LOG);
-        matcher.addURI(authority, AppContract.PATH_SYNC_LOG + "/USER/", SYNC_LOG_BY_USER);
+        matcher.addURI(authority, AppContract.PATH_SYNC_LOG + "/USER/*", SYNC_LOG_BY_USER);
         matcher.addURI(authority, AppContract.PATH_BABY, BABY);
-        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/", BABY_BY_USERID);
-        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*/BABY/", BABY_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*", BABY_BY_USERID);
+        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*/BABY/*", BABY_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_FEEDING, FEEDING);
-        matcher.addURI(authority, AppContract.PATH_FEEDING + "/USER/*/BABY/", FEEDING_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_FEEDING + "/USER/*/BABY/*", FEEDING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_DIAPER, DIAPER);
-        matcher.addURI(authority, AppContract.PATH_DIAPER + "/USER/*/BABY/", DIAPER_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_DIAPER + "/USER/*/BABY/*", DIAPER_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_SLEEPING, SLEEPING);
-        matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/", SLEEPING_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/*", SLEEPING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_HEALTH, HEALTH);
-        matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/", HEALTH_BY_USERID_BABYID);
-        matcher.addURI(authority, AppContract.PATH_BABY + "/ACTIVITIES/", ACTIVITIES_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/*", HEALTH_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_BABY + "/ACTIVITIES/*", ACTIVITIES_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ARTICLE, ARTICLE);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE + "/TYPE/", ARTICLE_BY_TYPE);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE + "/CATEGORY/", ARTICLE_BY_CATEGORY);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE + "/TYPE/*", ARTICLE_BY_TYPE);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE + "/CATEGORY/*", ARTICLE_BY_CATEGORY);
         matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL, ARTICLE_DETAIL);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/", ARTICLE_DETAIL_BY_ARTICLEID);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/DETAIL/", ARTICLE_DETAIL_WITH_DETAIL_BY_ARTICLEID);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/*", ARTICLE_DETAIL_BY_ARTICLEID);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/DETAIL/*", ARTICLE_DETAIL_WITH_DETAIL_BY_ARTICLEID);
         matcher.addURI(authority, AppContract.PATH_MEDIA, MEDIA);
-        matcher.addURI(authority, AppContract.PATH_MEDIA + "/TYPE/", MEDIA_BY_TYPE);
-        matcher.addURI(authority, AppContract.PATH_MEDIA + "/CATEGORY/", MEDIA_BY_CATEGORY);
+        matcher.addURI(authority, AppContract.PATH_MEDIA + "/TYPE/*", MEDIA_BY_TYPE);
+        matcher.addURI(authority, AppContract.PATH_MEDIA + "/CATEGORY/*", MEDIA_BY_CATEGORY);
 
         return matcher;
     }
@@ -670,7 +670,7 @@ public class AppProvider extends ContentProvider {
 
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
-
+        Log.v(LOG_TAG,"UriMatcher - " + uri);
         switch (match) {
             case SETTINGS:
                 return AppContract.SettingsEntry.CONTENT_TYPE;

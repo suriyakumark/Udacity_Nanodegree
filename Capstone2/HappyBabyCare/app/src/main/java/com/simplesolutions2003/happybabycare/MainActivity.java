@@ -1,13 +1,17 @@
 package com.simplesolutions2003.happybabycare;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,21 +25,42 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.api.Status;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private final static String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private final static String TAG = MainActivity.class.getSimpleName();
     public static boolean USER_LOGGED_IN = false;
+    public static String LOGGED_IN_USER_ID = null;
     public static DrawerLayout drawer = null;
+    public static MenuItem babyProfilesMenuItem;
+    public static MenuItem manageGroupMenuItem;
+    public static Spinner spinnerSelectBaby;
+
+    FragmentManager fragmentManager = getFragmentManager();
+    static String prevFragmentTag = null;
+    static String currFragmentTag = null;
+    static boolean keepFragmentInStack = false;
+    static boolean keepPrevFragmentInStack = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        // Create an ad request. Check logcat output for the hashed device ID to
+        // get test ads on a physical device. e.g.
+        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice(getString(R.string.ad_device_id))
+                .build();
+        mAdView.loadAd(adRequest);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -47,31 +72,33 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         if(!USER_LOGGED_IN){
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            Fragment fragment = new SignInFragment();
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, fragment)
-                    .commit();
-        }else{
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            handleFragments(new SignInFragment(),SignInFragment.TAG,SignInFragment.KEEP_IN_STACK);
         }
 
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        if(fragmentManager.getBackStackEntryCount() == 0 & fragmentManager.findFragmentByTag(SignInFragment.TAG) == null){
+            handleFragments(new SignInFragment(),SignInFragment.TAG,SignInFragment.KEEP_IN_STACK);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
-        Log.i(LOG_TAG, "popping backstack");
+        Log.i(TAG, "onBackPressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            Log.i(TAG, "closeDrawer");
         } else {
             FragmentManager fm = getFragmentManager();
             if (fm.getBackStackEntryCount() > 0) {
-                Log.i(LOG_TAG, "popping backstack");
+                Log.i(TAG, "popping backstack " + fm.getBackStackEntryCount());
                 fm.popBackStack();
             } else {
-                Log.i(LOG_TAG, "nothing on backstack, calling super");
+                Log.i(TAG, "nothing on backstack, calling super");
                 super.onBackPressed();
             }
         }
@@ -83,25 +110,34 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem item = menu.findItem(R.id.action_select_baby);
-        Spinner spinnerSelectBaby = (Spinner) MenuItemCompat.getActionView(item);
-        final String[] arraySelectBaby = new String[] {" + Add Baby"};
-        ArrayAdapter<String> adapterSelectBaby = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, arraySelectBaby);
-        spinnerSelectBaby.setAdapter(adapterSelectBaby);
+        babyProfilesMenuItem = (MenuItem)  menu.findItem(R.id.action_baby_profiles);
+        manageGroupMenuItem = (MenuItem)  menu.findItem(R.id.action_manage_group);
+        spinnerSelectBaby = (Spinner) MenuItemCompat.getActionView(item);
+        //final String[] arraySelectBaby = new String[] {" + Add Baby"};
+        //ArrayAdapter<String> adapterSelectBaby = new ArrayAdapter<String>(this,
+        //        android.R.layout.simple_spinner_item, arraySelectBaby);
+        //spinnerSelectBaby.setAdapter(adapterSelectBaby);
+
         spinnerSelectBaby.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
 
                     @Override
                     public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                         // TODO Auto-generated method stub
-                        Toast.makeText(getBaseContext(), arraySelectBaby[position], Toast.LENGTH_SHORT).show();
-
+                        //Toast.makeText(getBaseContext(), arraySelectBaby[position], Toast.LENGTH_SHORT).show();
                     }
                     @Override
                     public void onNothingSelected(AdapterView<?> arg0) {
 
                     }
                 });
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        updateMenuVisibility(this);
+        super.onPrepareOptionsMenu(menu);
         return true;
     }
 
@@ -113,11 +149,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_baby_profile) {
-            return true;
+        if (id == R.id.action_baby_profiles) {
+            handleFragments(new BabyFragment(),BabyFragment.TAG,BabyFragment.KEEP_IN_STACK);
         }
         if (id == R.id.action_manage_group) {
-            return true;
+            handleFragments(new GroupManageFragment(),GroupManageFragment.TAG,GroupManageFragment.KEEP_IN_STACK);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -126,64 +162,47 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        boolean addFragmentToStack = false;
+        final int id = item.getItemId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        Fragment fragment = null;
-        switch(id) {
-            case R.id.nav_activities:
-                fragment = new ActivitiesFragment();
-                addFragmentToStack = true;
-                break;
-            case R.id.nav_feeding:
-                fragment = new FeedingFragment();
-                break;
-            case R.id.nav_diaper:
-                fragment = new DiaperFragment();
-                break;
-            case R.id.nav_sleeping:
-                fragment = new SleepingFragment();
-                break;
-            case R.id.nav_health:
-                fragment = new HealthFragment();
-                break;
-            case R.id.nav_stories:
-                fragment = new StoriesFragment();
-                addFragmentToStack = true;
-                break;
-            case R.id.nav_rhymes:
-                fragment = new RhymesFragment();
-                addFragmentToStack = true;
-                break;
-            case R.id.nav_sounds:
-                fragment = new SoundsFragment();
-                break;
-            case R.id.nav_settings:
-                //setContentView(R.layout.settings);
-                break;
-            case R.id.nav_signout:
-                SignInFragment.ACTION_SIGN_OUT = true;
-                fragment = new SignInFragment();
-                break;
-        }
-        if (fragment != null) {
-            FragmentManager fragmentManager = getFragmentManager();
-            if(addFragmentToStack) {
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frame_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }else{
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frame_container, fragment)
-                        .commit();
+        drawer.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switch (id) {
+                    case R.id.nav_activities:
+                        handleFragments(new ActivitiesFragment(), ActivitiesFragment.TAG, ActivitiesFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_feeding:
+                        handleFragments(new FeedingFragment(), FeedingFragment.TAG, FeedingFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_diaper:
+                        handleFragments(new DiaperFragment(), DiaperFragment.TAG, DiaperFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_sleeping:
+                        handleFragments(new SleepingFragment(), SleepingFragment.TAG, SleepingFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_health:
+                        handleFragments(new HealthFragment(), HealthFragment.TAG, HealthFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_stories:
+                        handleFragments(new StoriesFragment(), StoriesFragment.TAG, StoriesFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_rhymes:
+                        handleFragments(new RhymesFragment(), RhymesFragment.TAG, RhymesFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_sounds:
+                        handleFragments(new SoundsFragment(), SoundsFragment.TAG, SoundsFragment.KEEP_IN_STACK);
+                        break;
+                    case R.id.nav_settings:
+                        //setContentView(R.layout.settings);
+                        break;
+                    case R.id.nav_signout:
+                        SignInFragment.ACTION_SIGN_OUT = true;
+                        handleFragments(new SignInFragment(), SignInFragment.TAG, SignInFragment.KEEP_IN_STACK);
+                        break;
+                }
             }
-            //setTitle(navMenuTitles[position]);
-        } else {
-            // error in creating fragment
-            Log.e("MainActivity", "Error in creating fragment");
-        }
+        },300);
         return true;
     }
 
@@ -199,4 +218,50 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public static void updateMenuVisibility(Activity activity){
+        if(USER_LOGGED_IN) {
+            babyProfilesMenuItem.setVisible(true);
+            manageGroupMenuItem.setVisible(true);
+            spinnerSelectBaby.setVisibility(View.VISIBLE);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }else{
+            babyProfilesMenuItem.setVisible(false);
+            manageGroupMenuItem.setVisible(false);
+            spinnerSelectBaby.setVisibility(View.GONE);
+            drawer.closeDrawer(GravityCompat.START);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+        ActivityCompat.invalidateOptionsMenu(activity);
+    }
+
+    public void handleFragments(Fragment fragment, String tag, boolean addToStack){
+        if (fragment != null) {
+            currFragmentTag = tag;
+            keepFragmentInStack = addToStack;
+            Log.v(TAG,"handleFragments - " + currFragmentTag + ";" + keepFragmentInStack + ";" + prevFragmentTag  + ";" + keepPrevFragmentInStack);
+
+            if(currFragmentTag.equals(SignInFragment.TAG)){
+                fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                Log.v(TAG,"handleFragments - " + fragmentManager.getBackStackEntryCount());
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .commit();
+            }
+            else if(keepPrevFragmentInStack) {
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .addToBackStack(prevFragmentTag)
+                        .commit();
+            }else{
+                fragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, fragment)
+                        .commit();
+            }
+            //setTitle(navMenuTitles[position]);
+            prevFragmentTag = currFragmentTag;
+            keepPrevFragmentInStack = keepFragmentInStack;
+        }
+        Log.v(TAG,"handleFragments - " + fragmentManager.getBackStackEntryCount());
+    }
 }
+

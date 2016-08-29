@@ -3,8 +3,56 @@
     android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorAccentLight">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Baby Profile" />
+        
+    <ImageView
+    	android:id="@+id/baby_prof_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+		android:padding="8dp"/>
+
+	<EditText
+		android:id="@+id/baby_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:maxLength="8"
+		android:text="@string/text_baby_name" />
+            
+	<RadioGroup
+		android:id="@+id/baby_gender"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="8dp">
+
+		<RadioButton
+			android:id="@+id/baby_gender_male"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="@string/text_baby_gender_male"
+			android:checked="true" />
+
+		<RadioButton
+			android:id="@+id/baby_gender_female"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="@string/text_baby_gender_female" />
+	    
+	</RadioGroup>
+	
+	<EditText
+		android:id="@+id/baby_birthdate"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:text="@string/text_baby_birthdate" />
+
+	<EditText
+		android:id="@+id/baby_due_date"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:text="@string/text_baby_due_date" />
+
 </LinearLayout>

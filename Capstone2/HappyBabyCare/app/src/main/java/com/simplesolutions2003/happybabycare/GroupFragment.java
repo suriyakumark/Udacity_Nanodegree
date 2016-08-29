@@ -9,17 +9,17 @@ import android.view.ViewGroup;
 /**
  * Created by SuriyaKumar on 8/20/2016.
  */
-public class RhymesDetailFragment extends Fragment {
+public class GroupFragment extends Fragment {
     public final static boolean KEEP_IN_STACK = false;
-    public final static String TAG = RhymesDetailFragment.class.getSimpleName();
+    public final static String TAG = GroupFragment.class.getSimpleName();
 
-    public RhymesDetailFragment(){}
+    public GroupFragment(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.rhymes_detail, container, false);
+        View rootView = inflater.inflate(R.layout.group, container, false);
 
         return rootView;
     }

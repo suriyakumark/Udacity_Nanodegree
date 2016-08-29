@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccentLight">
-    <TextView
+    android:id="@+id/manage_group_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccentLight">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/new_member"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="50"
+            android:text="Add members" />
+        <Button
+            android:id="@+id/group_add_member"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="16dp"
+            android:text="Add" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/group_remove_member"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Manage your group" />
+        android:layout_gravity="right"
+        android:background="@color/colorPrimaryDark"
+        android:layout_margin="16dp"
+        android:text="Remove Selected" />
+    <ListView
+        android:id="@+id/group_members_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:choiceMode="multipleChoice"
+        android:layout_margin="16dp" />
 </LinearLayout>

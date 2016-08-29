@@ -14,8 +14,9 @@ import android.view.ViewGroup;
 /**
  * Created by SuriyaKumar on 8/20/2016.
  */
-public class StoryDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-    private final String LOG_TAG = StoryDetailFragment.class.getSimpleName();
+public class StoryDetailFragment extends Fragment /*implements LoaderManager.LoaderCallbacks<Cursor>*/{
+    public final static boolean KEEP_IN_STACK = false;
+    public final String TAG = StoryDetailFragment.class.getSimpleName();
 
     public interface Callback {
     }

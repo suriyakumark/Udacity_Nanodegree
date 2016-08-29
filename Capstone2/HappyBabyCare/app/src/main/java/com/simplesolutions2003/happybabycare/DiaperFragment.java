@@ -10,6 +10,9 @@ import android.view.ViewGroup;
  * Created by SuriyaKumar on 8/20/2016.
  */
 public class DiaperFragment extends Fragment {
+    public final static boolean KEEP_IN_STACK = false;
+    public final static String TAG = DiaperFragment.class.getSimpleName();
+
     public DiaperFragment(){}
 
     @Override

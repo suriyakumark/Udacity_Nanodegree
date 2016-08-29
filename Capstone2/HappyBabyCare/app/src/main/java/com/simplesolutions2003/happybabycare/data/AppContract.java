@@ -92,12 +92,12 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
@@ -128,12 +128,12 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
@@ -153,7 +153,7 @@ public class AppContract {
         public static final String TABLE_NAME = "sync_log";
         public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
-        public static final String COLUMN_TABLE = "table";
+        public static final String COLUMN_TABLE_NAME = "table_name";
         public static final String COLUMN_LAST_SYNC_TS = "last_sync_timestamp";
 
         public static Uri buildSyncLogUri(long _id) {
@@ -165,12 +165,12 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
@@ -212,19 +212,19 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static long getBabyIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(4).equals("BABY")) {
-                return Long.parseLong(uri.getPathSegments().get(5));
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
             }
             return -1;
         }
@@ -263,19 +263,19 @@ public class AppContract {
 
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static long getBabyIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(4).equals("BABY")) {
-                return Long.parseLong(uri.getPathSegments().get(5));
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
             }
             return -1;
         }
@@ -311,19 +311,19 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static long getBabyIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(4).equals("BABY")) {
-                return Long.parseLong(uri.getPathSegments().get(5));
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
             }
             return -1;
         }
@@ -346,7 +346,7 @@ public class AppContract {
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_TIME = "time";
         public static final String COLUMN_DURATION = "duration";
-        public static final String COLUMN_WHERE = "where";
+        public static final String COLUMN_WHERE_SLEEP = "where_sleep";
         public static final String COLUMN_NOTES = "notes";
 
         public static Uri buildSleepingUri(long _id) {
@@ -358,19 +358,19 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static long getBabyIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(4).equals("BABY")) {
-                return Long.parseLong(uri.getPathSegments().get(5));
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
             }
             return -1;
         }
@@ -409,28 +409,28 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getUserIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("USER")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
-            if(uri.getPathSegments().get(2).equals("ACTIVITIES")){
-                if(uri.getPathSegments().get(3).equals("USER")) {
-                    return uri.getPathSegments().get(4);
+            if(uri.getPathSegments().get(1).equals("ACTIVITIES")){
+                if(uri.getPathSegments().get(2).equals("USER")) {
+                    return uri.getPathSegments().get(3);
                 }
             }
             return null;
         }
 
         public static long getBabyIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(4).equals("BABY")) {
-                return Long.parseLong(uri.getPathSegments().get(5));
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
             }
-            if(uri.getPathSegments().get(2).equals("ACTIVITIES")){
-                if(uri.getPathSegments().get(5).equals("USER")) {
-                    return Long.parseLong(uri.getPathSegments().get(6));
+            if(uri.getPathSegments().get(1).equals("ACTIVITIES")){
+                if(uri.getPathSegments().get(4).equals("USER")) {
+                    return Long.parseLong(uri.getPathSegments().get(5));
                 }
             }
             return -1;
@@ -466,19 +466,19 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getArticleTypeFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("TYPE")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("TYPE")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static String getArticleCategoryFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("CATEGORY")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("CATEGORY")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
@@ -513,15 +513,15 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static long getArticleIdFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("ARTICLE")) {
-                if(uri.getPathSegments().get(3).equals("DETAIL")) {
-                    return Long.parseLong(uri.getPathSegments().get(4));
-                }else{
+            if(uri.getPathSegments().get(1).equals("ARTICLE")) {
+                if(uri.getPathSegments().get(2).equals("DETAIL")) {
                     return Long.parseLong(uri.getPathSegments().get(3));
+                }else{
+                    return Long.parseLong(uri.getPathSegments().get(2));
                 }
             }else{
                 return -1;
@@ -559,19 +559,19 @@ public class AppContract {
         }
 
         public static long getIdFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+            return Long.parseLong(uri.getPathSegments().get(1));
         }
 
         public static String getMediaTypeFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("TYPE")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("TYPE")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
 
         public static String getMediaCategoryFromUri(Uri uri) {
-            if(uri.getPathSegments().get(2).equals("CATEGORY")) {
-                return uri.getPathSegments().get(3);
+            if(uri.getPathSegments().get(1).equals("CATEGORY")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }

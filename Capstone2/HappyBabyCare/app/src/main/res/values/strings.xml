@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Happy Baby Care</string>
-
+    <string name="banner_ad_unit_id">ca-app-pub-1979618719371623/6491972002</string>
+    <string name="ad_device_id">1D3D2254E4F4E858E1A2552829E2063B</string>
     <string name="nav_baby_care_category">Baby Care</string>
     <string name="nav_baby_care_activities">Activities</string>
     <string name="nav_baby_care_feeding">Feeding</string>
@@ -16,11 +17,66 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_baby_profile">Baby Profiles</string>
+    <string name="action_baby_profiles">Baby Profiles</string>
     <string name="action_manage_group">Manage Group</string>
-    <string name="action_select_baby">Select Baby</string>
+    <string name="action_select_baby">Select Baby</string>    
 
-    <string name="text_sign_in">Please sign in to continue</string>
+    <string name="text_sign_in">Sign in with your google account to continue</string>
+    <string name="text_date">Date</string>
+    <string name="text_time">Time</string>
+    
+    <string name="text_group_name">Group Name</string>
+    <string name="text_group_member">Member Email</string>
+    <string name="btn_group_create">Create</string>
+    <string name="btn_group_join">Join</string>
+    <string name="btn_group_skip">Skip</string>
+    <string name="btn_group_member_add">Add</string>
+    <string name="btn_group_member_remove">Remove</string>
+
+    <string name="btn_baby_add">Add Baby</string>
+    <string name="text_baby_name">Short Name</string>
+    <string name="text_baby_birthdate">Birth Date</string>
+    <string name="text_baby_due_date">Due Date</string>
+    <string name="text_baby_gender">Baby Gender</string>
+    <string name="text_baby_gender_male">Male</string>
+    <string name="text_baby_gender_female">Female</string>
+    
+    <string name="text_feeding_date">Date</string>
+    <string name="text_feeding_time">Time</string>
+    <string name="btn_feeding_nursing">Nursing</string>
+    <string name="btn_feeding_nursing_left">L</string>
+    <string name="btn_feeding_nursing_right">R</string>
+    <string name="btn_feeding_pumped">Pumped</string>
+    <string name="btn_feeding_pumped_qty">Qty</string>
+    <string name="btn_feeding_formula">Formula</string>
+    <string name="btn_feeding_formula_qty">Qty</string>
+    <string name="btn_feeding_Others">Others</string>
+    <string name="btn_feeding_Others_type">Type</string>
+    <string name="btn_feeding_Others_qty">Qty</string>
+    <string name="text_feeding_notes">Notes</string>
+    
+    <string name="text_diaper_date">Date</string>
+    <string name="text_diaper_time">Time</string>
+    <string name="btn_diaper_wet">Wet</string>
+    <string name="btn_diaper_dirty">Dirty</string>
+    <string name="btn_diaper_mixed">Mixed</string>
+    <string name="btn_diaper_dry">Dry</string>
+    <string name="text_diaper_notes">Notes</string>
+    
+    <string name="text_sleeping_date">Date</string>
+    <string name="text_sleeping_time">Time</string>
+    <string name="text_sleeping_duration">Duration</string>
+    <string name="text_sleeping_notes">Notes</string>
+    
+    <string name="text_health_date">Date</string>
+    <string name="text_health_time">Time</string>
+    <string name="text_health_summary">Summary</string>
+    <string name="text_health_notes">Notes</string>
+    
+    <string name="btn_sounds_play">Play</string>
+    <string name="btn_sounds_pause">Pause</string>
+    <string name="btn_sounds_stop">Stop</string>
+    <string name="btn_sounds_repeat">Repeat</string>
 
 </resources>
 

@@ -50,7 +50,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + UserEntry.TABLE_NAME + " (" +
                 UserEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 UserEntry.COLUMN_USER_ID + " TEXT NOT NULL, " +
-                UserEntry.COLUMN_PASSWORD + " TEXT NOT NULL, " +
+                UserEntry.COLUMN_PASSWORD + " TEXT, " +
                 UserEntry.COLUMN_ACTIVE + " INTEGER, " +
                 UserEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
 
@@ -71,11 +71,11 @@ public class AppDBHelper extends SQLiteOpenHelper  {
         final String SQL_CREATE_SYNC_LOG_TABLE = "CREATE TABLE " + SyncLogEntry.TABLE_NAME + " (" +
                 SyncLogEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 SyncLogEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
-                SyncLogEntry.COLUMN_TABLE + " TEXT NOT NULL, " +
+                SyncLogEntry.COLUMN_TABLE_NAME + " TEXT NOT NULL, " +
                 SyncLogEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
 
                 " UNIQUE (" + SyncLogEntry.COLUMN_USER_ID + ", "
-                            + SyncLogEntry.COLUMN_TABLE + ") ON CONFLICT REPLACE," +
+                            + SyncLogEntry.COLUMN_TABLE_NAME + ") ON CONFLICT REPLACE," +
 
                 " FOREIGN KEY (" + UserPreferenceEntry.COLUMN_USER_ID + ") REFERENCES " +
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + "));";
@@ -149,7 +149,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 SleepingEntry.COLUMN_DATE + " DATE, " +
                 SleepingEntry.COLUMN_TIME + " TIME, " +
                 SleepingEntry.COLUMN_DURATION + " INTEGER, " +
-                SleepingEntry.COLUMN_WHERE + " TEXT, " +
+                SleepingEntry.COLUMN_WHERE_SLEEP + " TEXT, " +
                 SleepingEntry.COLUMN_NOTES + " TEXT, " +
 
                 " UNIQUE (" + SleepingEntry.COLUMN_USER_ID + "," +

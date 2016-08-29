@@ -10,6 +10,9 @@ import android.view.ViewGroup;
  * Created by SuriyaKumar on 8/20/2016.
  */
 public class RhymesFragment extends Fragment {
+    public final static boolean KEEP_IN_STACK = true;
+    public final static String TAG = RhymesFragment.class.getSimpleName();
+
     public RhymesFragment(){}
 
     @Override

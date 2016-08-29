@@ -1,10 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccentLight">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Diaper" />
+    xmlns:app="http://schemas.android.com/tools"
+    android:id="@+id/diaper_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccentLight">
+
+    <include layout="@layout/date_time" />
+
+    <android.support.v7.widget.GridLayout
+        xmlns:grid="http://schemas.android.com/apk/res-auto"
+        android:padding="16dp"
+        grid:columnCount="2"
+        grid:rowCount="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            style="@style/Grid_4_image"
+            grid:layout_columnWeight="1"
+            grid:layout_rowWeight="1"
+            android:src="@drawable/diaper_wet"
+            android:id="@+id/diaper_wet" />
+        <ImageButton
+            style="@style/Grid_4_image"
+            grid:layout_columnWeight="1"
+            grid:layout_rowWeight="1"
+            android:src="@drawable/diaper_dirty"
+            android:id="@+id/diaper_dirty" />
+        <ImageButton
+            style="@style/Grid_4_image"
+            grid:layout_columnWeight="1"
+            grid:layout_rowWeight="1"
+            android:src="@drawable/diaper_mixed"
+            android:id="@+id/diaper_mixed" />
+        <ImageButton
+            style="@style/Grid_4_image"
+            grid:layout_columnWeight="1"
+            grid:layout_rowWeight="1"
+            android:src="@drawable/diaper_dry"
+            android:id="@+id/diaper_dry" />
+    </android.support.v7.widget.GridLayout>
+
+    <include layout="@layout/notes" />
+
 </LinearLayout>
