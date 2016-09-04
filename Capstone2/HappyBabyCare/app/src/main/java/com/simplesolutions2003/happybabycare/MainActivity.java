@@ -34,10 +34,11 @@ public class MainActivity extends AppCompatActivity
     private final static String TAG = MainActivity.class.getSimpleName();
     public static boolean USER_LOGGED_IN = false;
     public static String LOGGED_IN_USER_ID = null;
+    public static long ACTIVE_BABY_ID = -1;
+    public static boolean FRAGMENT_REQUIRES_BABY_ID = false;
     public static DrawerLayout drawer = null;
     public static MenuItem babyProfilesMenuItem;
     public static MenuItem manageGroupMenuItem;
-    public static Spinner spinnerSelectBaby;
 
     FragmentManager fragmentManager = getFragmentManager();
     static String prevFragmentTag = null;
@@ -93,10 +94,11 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
             Log.i(TAG, "closeDrawer");
         } else {
-            FragmentManager fm = getFragmentManager();
-            if (fm.getBackStackEntryCount() > 0) {
-                Log.i(TAG, "popping backstack " + fm.getBackStackEntryCount());
-                fm.popBackStack();
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                Log.i(TAG, "popping backstack " + fragmentManager.getBackStackEntryCount());
+                //fragmentManager.popBackStackImmediate(prevFragmentTag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                //Log.v(TAG, "popping backstack > " + fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1));
+                fragmentManager.popBackStack();
             } else {
                 Log.i(TAG, "nothing on backstack, calling super");
                 super.onBackPressed();
@@ -107,30 +109,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem item = menu.findItem(R.id.action_select_baby);
         babyProfilesMenuItem = (MenuItem)  menu.findItem(R.id.action_baby_profiles);
         manageGroupMenuItem = (MenuItem)  menu.findItem(R.id.action_manage_group);
-        spinnerSelectBaby = (Spinner) MenuItemCompat.getActionView(item);
-        //final String[] arraySelectBaby = new String[] {" + Add Baby"};
-        //ArrayAdapter<String> adapterSelectBaby = new ArrayAdapter<String>(this,
-        //        android.R.layout.simple_spinner_item, arraySelectBaby);
-        //spinnerSelectBaby.setAdapter(adapterSelectBaby);
 
-        spinnerSelectBaby.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
-                        // TODO Auto-generated method stub
-                        //Toast.makeText(getBaseContext(), arraySelectBaby[position], Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> arg0) {
-
-                    }
-                });
         return true;
     }
 
@@ -143,12 +125,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_baby_profiles) {
             handleFragments(new BabyFragment(),BabyFragment.TAG,BabyFragment.KEEP_IN_STACK);
         }
@@ -222,12 +200,12 @@ public class MainActivity extends AppCompatActivity
         if(USER_LOGGED_IN) {
             babyProfilesMenuItem.setVisible(true);
             manageGroupMenuItem.setVisible(true);
-            spinnerSelectBaby.setVisibility(View.VISIBLE);
+            //spinnerSelectBaby.setVisibility(View.VISIBLE);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }else{
             babyProfilesMenuItem.setVisible(false);
             manageGroupMenuItem.setVisible(false);
-            spinnerSelectBaby.setVisibility(View.GONE);
+            //spinnerSelectBaby.setVisibility(View.GONE);
             drawer.closeDrawer(GravityCompat.START);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
@@ -235,33 +213,91 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void handleFragments(Fragment fragment, String tag, boolean addToStack){
+
+        if(MainActivity.ACTIVE_BABY_ID == -1 & (tag.equals(ActivitiesFragment.TAG) |
+                tag.equals(FeedingFragment.TAG) |
+                tag.equals(DiaperFragment.TAG) |
+                tag.equals(SleepingFragment.TAG) |
+                tag.equals(HealthFragment.TAG))){
+            fragment = null;
+            Toast.makeText(this, "Please select a baby", Toast.LENGTH_LONG).show();
+        }
+
         if (fragment != null) {
             currFragmentTag = tag;
             keepFragmentInStack = addToStack;
-            Log.v(TAG,"handleFragments - " + currFragmentTag + ";" + keepFragmentInStack + ";" + prevFragmentTag  + ";" + keepPrevFragmentInStack);
+            Log.v(TAG, "handleFragments - " + currFragmentTag + ";" + keepFragmentInStack + ";" + prevFragmentTag + ";" + keepPrevFragmentInStack);
 
-            if(currFragmentTag.equals(SignInFragment.TAG)){
+            if(currFragmentTag.equals(SignInFragment.TAG) | keepFragmentInStack){
                 fragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                Log.v(TAG,"handleFragments - " + fragmentManager.getBackStackEntryCount());
-                fragmentManager.beginTransaction()
-                        .replace(R.id.frame_container, fragment)
-                        .commit();
             }
-            else if(keepPrevFragmentInStack) {
+
+            if(keepPrevFragmentInStack){
                 fragmentManager.beginTransaction()
-                        .replace(R.id.frame_container, fragment)
-                        .addToBackStack(prevFragmentTag)
+                        .replace(R.id.frame_container, fragment,currFragmentTag)
+                        .addToBackStack(currFragmentTag)
                         .commit();
             }else{
                 fragmentManager.beginTransaction()
-                        .replace(R.id.frame_container, fragment)
+                        .replace(R.id.frame_container, fragment,currFragmentTag)
                         .commit();
             }
-            //setTitle(navMenuTitles[position]);
             prevFragmentTag = currFragmentTag;
             keepPrevFragmentInStack = keepFragmentInStack;
+            /*else {
+
+                Fragment fragmentToRemove;
+                fragmentToRemove = fragmentManager.findFragmentByTag(prevFragmentTag);
+                int iFragment;
+                if(fragmentManager.getBackStackEntryCount() > 0) {
+                    for (iFragment = 0; iFragment < fragmentManager.getBackStackEntryCount(); iFragment++) {
+                        if (fragmentManager.getBackStackEntryAt(iFragment).equals(currFragmentTag)) {
+
+                        }
+                    }
+                }
+                if (fragmentToRemove != null) {
+                    if(keepPrevFragmentInStack) {
+                        fragmentManager.beginTransaction()
+                                .remove(fragmentToRemove)
+                                //.addToBackStack(prevFragmentTag)
+                                .commit();
+                        //fragmentManager.popBackStack();
+                    }else{
+                        fragmentManager.beginTransaction()
+                                .remove(fragmentToRemove)
+                                .commit();
+                    }
+                }
+
+                fragmentToRemove = fragmentManager.findFragmentByTag(currFragmentTag);
+                if (fragmentToRemove != null) {
+                    fragmentManager.beginTransaction()
+                            .remove(fragmentToRemove)
+                            .commit();
+                }
+
+                if(keepFragmentInStack) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frame_container, fragment, currFragmentTag)
+                            .addToBackStack(currFragmentTag)
+                            .commit();
+                }else{
+                    fragmentManager.beginTransaction()
+                            .add(R.id.frame_container, fragment, currFragmentTag)
+                            .commit();
+                }
+            }
+            //setTitle(navMenuTitles[position]);
+            */
         }
         Log.v(TAG,"handleFragments - " + fragmentManager.getBackStackEntryCount());
+    }
+
+    public void handleFragments(boolean goBack){
+        if(goBack) {
+            onBackPressed();
+        }
     }
 }
 

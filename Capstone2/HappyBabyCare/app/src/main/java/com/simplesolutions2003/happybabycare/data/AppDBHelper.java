@@ -83,7 +83,6 @@ public class AppDBHelper extends SQLiteOpenHelper  {
         final String SQL_CREATE_BABY_TABLE = "CREATE TABLE " + BabyEntry.TABLE_NAME + " (" +
                 BabyEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 BabyEntry.COLUMN_USER_ID + " TEXT NOT NULL, " +
-                BabyEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
                 BabyEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 BabyEntry.COLUMN_GENDER + " TEXT NOT NULL, " +
                 BabyEntry.COLUMN_BIRTH_DATE + " DATE, " +
@@ -96,7 +95,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " UNIQUE (" + BabyEntry.COLUMN_USER_ID + ","
-                            + BabyEntry.COLUMN_BABY_ID + ") ON CONFLICT REPLACE);";
+                            + BabyEntry.COLUMN_NAME + ") ON CONFLICT REPLACE);";
 
         final String SQL_CREATE_FEEDING_TABLE = "CREATE TABLE " + FeedingEntry.TABLE_NAME + " (" +
                 FeedingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -118,7 +117,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + FeedingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + "));";
 
         final String SQL_CREATE_DIAPER_TABLE = "CREATE TABLE " + DiaperEntry.TABLE_NAME + " (" +
                 DiaperEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -139,7 +138,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + FeedingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + "));";
 
         final String SQL_CREATE_SLEEPING_TABLE = "CREATE TABLE " + SleepingEntry.TABLE_NAME + " (" +
                 SleepingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -160,7 +159,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + SleepingEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + "));";
 
         final String SQL_CREATE_HEALTH_TABLE = "CREATE TABLE " + HealthEntry.TABLE_NAME + " (" +
                 HealthEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -181,7 +180,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.TABLE_NAME + " (" + UserEntry.COLUMN_USER_ID + ")," +
 
                 " FOREIGN KEY (" + HealthEntry.COLUMN_BABY_ID + ") REFERENCES " +
-                BabyEntry.TABLE_NAME + " (" + BabyEntry.COLUMN_BABY_ID + "));";
+                BabyEntry.TABLE_NAME + " (" + BabyEntry._ID + "));";
 
         final String SQL_CREATE_ARTICLE_TABLE = "CREATE TABLE " + ArticleEntry.TABLE_NAME + " (" +
                 ArticleEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

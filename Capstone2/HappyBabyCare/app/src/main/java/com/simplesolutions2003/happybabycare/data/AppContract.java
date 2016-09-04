@@ -22,6 +22,7 @@ public class AppContract {
     public static final String PATH_DIAPER = "diaper";
     public static final String PATH_SLEEPING = "sleeping";
     public static final String PATH_HEALTH = "health";
+    public static final String PATH_ACTIVITIES = "activities";
     public static final String PATH_ARTICLE = "article";
     public static final String PATH_ARTICLE_DETAIL = "article_detail";
     public static final String PATH_MEDIA = "media";
@@ -190,7 +191,6 @@ public class AppContract {
 
         public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
-        public static final String COLUMN_BABY_ID = "baby_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_GENDER = "gender";
         public static final String COLUMN_BIRTH_DATE = "birth_date";
@@ -257,8 +257,8 @@ public class AppContract {
             return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static Uri buildFeedingByUserIdBabyIdUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        public static Uri buildFeedingByUserIdBabyIdUri(String user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(user_id).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
         }
 
 
@@ -306,8 +306,8 @@ public class AppContract {
             return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static Uri buildDiaperByUserIdBabyIdUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        public static Uri buildDiaperByUserIdBabyIdUri(String user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(user_id).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
         }
 
         public static long getIdFromUri(Uri uri) {
@@ -353,8 +353,8 @@ public class AppContract {
             return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static Uri buildSleepingByUserIdBabyIdUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        public static Uri buildSleepingByUserIdBabyIdUri(String user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(user_id).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
         }
 
         public static long getIdFromUri(Uri uri) {
@@ -400,12 +400,8 @@ public class AppContract {
             return ContentUris.withAppendedId(CONTENT_URI, _id);
         }
 
-        public static Uri buildHealthByUserBabyUri(long user_id, long baby_id) {
-            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
-        }
-
-        public static Uri buildActivitiesByUserBabyUri(long user_id, long baby_id) {
-            return BASE_CONTENT_URI.buildUpon().appendPath("ACTIVITIES").appendPath("USER").appendPath(Long.toString(user_id)).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
+        public static Uri buildHealthByUserBabyUri(String user_id, long baby_id) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(user_id).appendPath("BABY").appendPath(Long.toString(baby_id)).build();
         }
 
         public static long getIdFromUri(Uri uri) {
@@ -416,10 +412,44 @@ public class AppContract {
             if(uri.getPathSegments().get(1).equals("USER")) {
                 return uri.getPathSegments().get(2);
             }
-            if(uri.getPathSegments().get(1).equals("ACTIVITIES")){
-                if(uri.getPathSegments().get(2).equals("USER")) {
-                    return uri.getPathSegments().get(3);
-                }
+            return null;
+        }
+
+        public static long getBabyIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(3).equals("BABY")) {
+                return Long.parseLong(uri.getPathSegments().get(4));
+            }
+            return -1;
+        }
+    }
+
+
+    public static final class ActivitiesEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ACTIVITIES).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ACTIVITIES;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ACTIVITIES;
+
+        public static final String COLUMN_ACTIVITY_ID = "_id";
+        public static final String COLUMN_ACTIVITY_TYPE = "activity_type";
+        public static final String COLUMN_USER_ID = "user_id";
+        public static final String COLUMN_BABY_ID = "baby_id";
+        public static final String COLUMN_TIMESTAMP = "activity_timestamp";
+        public static final String COLUMN_DATE = "activity_date";
+        public static final String COLUMN_TIME = "activity_time";
+        public static final String COLUMN_SUMMARY = "activity_summary";
+        public static final String COLUMN_DETAIL = "activity_detail";
+
+        public static Uri buildActivitiesByUserIdBabyIdUri(String user_id, long baby_id,String activity_date) {
+            return CONTENT_URI.buildUpon().appendPath("USER").appendPath(user_id).appendPath("BABY").appendPath(Long.toString(baby_id)).appendPath("DATE").appendPath(activity_date).build();
+        }
+
+        public static String getUserIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(1).equals("USER")) {
+                return uri.getPathSegments().get(2);
             }
             return null;
         }
@@ -428,12 +458,14 @@ public class AppContract {
             if(uri.getPathSegments().get(3).equals("BABY")) {
                 return Long.parseLong(uri.getPathSegments().get(4));
             }
-            if(uri.getPathSegments().get(1).equals("ACTIVITIES")){
-                if(uri.getPathSegments().get(4).equals("USER")) {
-                    return Long.parseLong(uri.getPathSegments().get(5));
-                }
-            }
             return -1;
+        }
+
+        public static String getActivityDateFromUri(Uri uri) {
+            if(uri.getPathSegments().get(5).equals("DATE")) {
+                return uri.getPathSegments().get(6);
+            }
+            return null;
         }
     }
 

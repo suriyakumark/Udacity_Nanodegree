@@ -2,25 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/baby_list_layout"
     android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants"
     android:layout_gravity="start"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/profile_photo_width"
+        android:layout_height="@dimen/profile_photo_height"
+        android:scaleType="centerCrop"
         android:gravity="start"
         android:id="@+id/baby_prof_image" />
-
+    <View android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
     <LinearLayout
         android:orientation="vertical"
-        android:layout_gravity="start"
-        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_gravity="start|center_vertical"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="start"
+            android:textSize="18sp"
             android:id="@+id/baby_name" />
         <TextView
             android:layout_width="wrap_content"
@@ -33,4 +39,35 @@
             android:gravity="start"
             android:id="@+id/baby_gender" />
     </LinearLayout>
+    <View android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|end"
+        android:layout_gravity="center_vertical|end"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="@dimen/padding_btn"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_launch_black_24dp"
+        android:id="@+id/baby_select" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|end"
+        android:layout_gravity="center_vertical|end"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:padding="@dimen/padding_btn"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_create_black_24dp"
+        android:id="@+id/baby_edit" />
+
 </LinearLayout>

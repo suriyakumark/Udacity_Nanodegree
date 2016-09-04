@@ -3,17 +3,20 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:weightSum="1">
     <EditText
+        android:id="@+id/activity_date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:padding="8dp"
-        android:text="@string/text_date" />
+        android:hint="@string/text_date" />
     <EditText
+        android:id="@+id/activity_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:padding="8dp"
-        android:text="@string/text_time" />
+        android:hint="@string/text_time" />
 </LinearLayout>

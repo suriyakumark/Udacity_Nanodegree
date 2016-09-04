@@ -4,22 +4,26 @@
         android:layout_height="match_parent"
         android:background="@color/colorAccentLight">
         
-    <ImageView
+    <ImageButton
     	android:id="@+id/baby_prof_image"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+		android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/profile_photo_width"
+        android:layout_height="@dimen/profile_photo_height"
+		android:scaleType="fitCenter"
+		android:src="@drawable/logo"
 		android:padding="8dp"/>
 
 	<EditText
 		android:id="@+id/baby_name"
+		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="8dp"
-		android:maxLength="8"
-		android:text="@string/text_baby_name" />
+		android:hint="@string/text_baby_name" />
             
 	<RadioGroup
 		android:id="@+id/baby_gender"
+		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="8dp">
@@ -43,16 +47,20 @@
 	
 	<EditText
 		android:id="@+id/baby_birthdate"
+		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="8dp"
-		android:text="@string/text_baby_birthdate" />
+		android:hint="@string/text_baby_birthdate" />
 
 	<EditText
 		android:id="@+id/baby_due_date"
+		android:layout_gravity="center_horizontal"
+		android:descendantFocusability="blocksDescendants"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="8dp"
-		android:text="@string/text_baby_due_date" />
+		android:hint="@string/text_baby_due_date" />
+
 
 </LinearLayout>

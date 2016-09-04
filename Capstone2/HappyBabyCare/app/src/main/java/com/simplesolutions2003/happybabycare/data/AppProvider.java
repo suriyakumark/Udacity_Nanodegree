@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by SuriyaKumar on 8/16/2016.
  */
@@ -151,7 +154,7 @@ public class AppProvider extends ContentProvider {
 
     static{
         sActivitiesQueryBuilder = new SQLiteQueryBuilder();
-
+/*
         sActivitiesQueryBuilder.setTables(
                 AppContract.BabyEntry.TABLE_NAME +
                         " LEFT OUTER JOIN " + AppContract.DiaperEntry.TABLE_NAME +
@@ -190,6 +193,7 @@ public class AppProvider extends ContentProvider {
                         "." + AppContract.BabyEntry._ID +
                         " = " + AppContract.HealthEntry.TABLE_NAME +
                         "." + AppContract.HealthEntry.COLUMN_BABY_ID);
+                        */
     }
 
     static{
@@ -248,7 +252,7 @@ public class AppProvider extends ContentProvider {
             AppContract.BabyEntry.TABLE_NAME +
                     "." + AppContract.BabyEntry.COLUMN_USER_ID + " = ? AND " +
             AppContract.BabyEntry.TABLE_NAME +
-            "." + AppContract.BabyEntry.COLUMN_BABY_ID + " = ? ";
+            "." + AppContract.BabyEntry._ID + " = ? ";
 
     private static final String sFeedingSelection =
             AppContract.FeedingEntry.TABLE_NAME +
@@ -264,6 +268,11 @@ public class AppProvider extends ContentProvider {
             " AND " + AppContract.FeedingEntry.TABLE_NAME +
                     "." + AppContract.FeedingEntry.COLUMN_BABY_ID + " = ? ";
 
+    private static final String sActivitiesFeedingByUserIdBabyIdSelection =
+            sFeedingByUserIdBabyIdSelection +
+                    " AND " + AppContract.FeedingEntry.TABLE_NAME +
+                    "." + AppContract.FeedingEntry.COLUMN_DATE + " = ? ";
+
     private static final String sDiaperSelection =
             AppContract.DiaperEntry.TABLE_NAME +
                     "." + AppContract.DiaperEntry._ID + " = ? ";
@@ -277,6 +286,11 @@ public class AppProvider extends ContentProvider {
                     "." + AppContract.DiaperEntry.COLUMN_USER_ID + " = ? " +
                     " AND " + AppContract.DiaperEntry.TABLE_NAME +
                     "." + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? ";
+
+    private static final String sActivitiesDiaperByUserIdBabyIdSelection =
+            sDiaperByUserIdBabyIdSelection +
+                    " AND " + AppContract.DiaperEntry.TABLE_NAME +
+                    "." + AppContract.DiaperEntry.COLUMN_DATE + " = ? ";
 
     private static final String sSleepingSelection =
             AppContract.SleepingEntry.TABLE_NAME +
@@ -292,6 +306,11 @@ public class AppProvider extends ContentProvider {
                     " AND " + AppContract.SleepingEntry.TABLE_NAME +
                     "." + AppContract.SleepingEntry.COLUMN_BABY_ID + " = ? ";
 
+    private static final String sActivitiesSleepingByUserIdBabyIdSelection =
+            sSleepingByUserIdBabyIdSelection +
+                    " AND " + AppContract.SleepingEntry.TABLE_NAME +
+                    "." + AppContract.SleepingEntry.COLUMN_DATE + " = ? ";
+
     private static final String sHealthSelection =
             AppContract.HealthEntry.TABLE_NAME +
                     "." + AppContract.HealthEntry._ID + " = ? ";
@@ -302,11 +321,10 @@ public class AppProvider extends ContentProvider {
                     " AND " + AppContract.HealthEntry.TABLE_NAME +
                     "." + AppContract.HealthEntry.COLUMN_BABY_ID + " = ? ";
 
-    private static final String sActivitiesByUserIdBabyIdSelection =
-            AppContract.UserEntry.TABLE_NAME +
-                    "." + AppContract.UserEntry._ID + " = ? " +
-                    " AND " + AppContract.BabyEntry.TABLE_NAME +
-                    "." + AppContract.BabyEntry._ID + " = ? ";
+    private static final String sActivitiesHealthByUserIdBabyIdSelection =
+            sHealthByUserIdBabyIdSelection +
+                    " AND " + AppContract.HealthEntry.TABLE_NAME +
+                    "." + AppContract.HealthEntry.COLUMN_DATE + " = ? ";
 
     private static final String sArticleSelection =
             AppContract.ArticleEntry.TABLE_NAME +
@@ -429,13 +447,13 @@ public class AppProvider extends ContentProvider {
 
         Log.v(LOG_TAG, "getBabyByUserId uri - " + uri);
         String userId = AppContract.BabyEntry.getUserIdFromUri(uri);
-        String BabyId = Long.toString(AppContract.BabyEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getBabyByUserId userId - " + userId + " BabyId - " + BabyId);
+        String babyId = Long.toString(AppContract.BabyEntry.getBabyIdFromUri(uri));
+        Log.v(LOG_TAG, "getBabyByUserId userId - " + userId + " BabyId - " + babyId);
 
         return sBabyQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sBabyByUserIdBabyIdSelection,
-                new String[]{userId,BabyId},
+                new String[]{userId,babyId},
                 null,
                 null,
                 sortOrder
@@ -446,13 +464,13 @@ public class AppProvider extends ContentProvider {
 
         Log.v(LOG_TAG, "getFeedingByUserId uri - " + uri);
         String userId = AppContract.FeedingEntry.getUserIdFromUri(uri);
-        String BabyId = Long.toString(AppContract.FeedingEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getFeedingByUserId userId - " + userId + " BabyId - " + BabyId);
+        String babyId = Long.toString(AppContract.FeedingEntry.getBabyIdFromUri(uri));
+        Log.v(LOG_TAG, "getFeedingByUserId userId - " + userId + " BabyId - " + babyId);
 
         return sFeedingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sFeedingByUserIdBabyIdSelection,
-                new String[]{userId,BabyId},
+                new String[]{userId,babyId},
                 null,
                 null,
                 sortOrder
@@ -463,13 +481,13 @@ public class AppProvider extends ContentProvider {
 
         Log.v(LOG_TAG, "getDiaperByUserIdBabyId uri - " + uri);
         String userId = AppContract.DiaperEntry.getUserIdFromUri(uri);
-        String BabyId = Long.toString(AppContract.DiaperEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getDiaperByUserIdBabyId userId - " + userId + " BabyId - " + BabyId);
+        String babyId = Long.toString(AppContract.DiaperEntry.getBabyIdFromUri(uri));
+        Log.v(LOG_TAG, "getDiaperByUserIdBabyId userId - " + userId + " BabyId - " + babyId);
 
         return sDiaperQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sDiaperByUserIdBabyIdSelection,
-                new String[]{userId,BabyId},
+                new String[]{userId,babyId},
                 null,
                 null,
                 sortOrder
@@ -481,13 +499,13 @@ public class AppProvider extends ContentProvider {
 
         Log.v(LOG_TAG, "getSleepingByUserIdBabyId uri - " + uri);
         String userId = AppContract.SleepingEntry.getUserIdFromUri(uri);
-        String BabyId = Long.toString(AppContract.SleepingEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getSleepingByUserIdBabyId userId - " + userId + " BabyId - " + BabyId);
+        String babyId = Long.toString(AppContract.SleepingEntry.getBabyIdFromUri(uri));
+        Log.v(LOG_TAG, "getSleepingByUserIdBabyId userId - " + userId + " BabyId - " + babyId);
 
         return sSleepingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sSleepingByUserIdBabyIdSelection,
-                new String[]{userId,BabyId},
+                new String[]{userId,babyId},
                 null,
                 null,
                 sortOrder
@@ -498,35 +516,99 @@ public class AppProvider extends ContentProvider {
 
         Log.v(LOG_TAG, "getHealthByUserIdBabyId uri - " + uri);
         String userId = AppContract.HealthEntry.getUserIdFromUri(uri);
-        String BabyId = Long.toString(AppContract.HealthEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getHealthByUserIdBabyId userId - " + userId + " BabyId - " + BabyId);
+        String babyId = Long.toString(AppContract.HealthEntry.getBabyIdFromUri(uri));
+        Log.v(LOG_TAG, "getHealthByUserIdBabyId userId - " + userId + " BabyId - " + babyId);
 
         return sHealthQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sHealthByUserIdBabyIdSelection,
-                new String[]{userId,BabyId},
+                new String[]{userId,babyId},
                 null,
                 null,
                 sortOrder
         );
     }
 
-    private Cursor getActivitiesByBabyId(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getActivitiesByUserIdBabyId(Uri uri, String[] projection, String sortOrder) {
 
         Log.v(LOG_TAG, "getActivitiesByBabyId uri - " + uri);
-        String userId = AppContract.HealthEntry.getUserIdFromUri(uri);
-        String babyId = Long.toString(AppContract.HealthEntry.getBabyIdFromUri(uri));
+        String userId = AppContract.ActivitiesEntry.getUserIdFromUri(uri);
+        String babyId = Long.toString(AppContract.ActivitiesEntry.getBabyIdFromUri(uri));
+        String activityDate = AppContract.ActivitiesEntry.getActivityDateFromUri(uri);
         Log.v(LOG_TAG, "getActivitiesByBabyId userId - " + userId);
         Log.v(LOG_TAG, "getActivitiesByBabyId babyId - " + babyId);
+        Log.v(LOG_TAG, "getActivitiesByBabyId activityDate - " + activityDate);
 
-        return sActivitiesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                sActivitiesByUserIdBabyIdSelection,
-                new String[]{userId,babyId},
-                null,
-                null,
-                sortOrder
-        );
+        String[] selectionArgs = new String[]{userId,babyId,activityDate,userId,babyId,activityDate,userId,babyId,activityDate,userId,babyId,activityDate};
+        String activitiesFeedingQuery;
+        String activitiesDiaperQuery;
+        String activitiesSleepingQuery;
+        String activitiesHealthQuery;
+
+        activitiesFeedingQuery = "SELECT " +
+                "'Feeding'" + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE + ", " +
+                AppContract.FeedingEntry._ID + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_ID + ", " +
+                AppContract.FeedingEntry.COLUMN_USER_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_USER_ID + ", " +
+                AppContract.FeedingEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
+                AppContract.FeedingEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
+                AppContract.FeedingEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
+                AppContract.FeedingEntry.COLUMN_TYPE + " || " +
+                AppContract.FeedingEntry.COLUMN_QUANTITY +
+                                    " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
+                AppContract.FeedingEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
+                " FROM " + AppContract.FeedingEntry.TABLE_NAME +
+                " WHERE " +
+                sActivitiesFeedingByUserIdBabyIdSelection;
+
+        activitiesDiaperQuery = "SELECT " +
+                "'Diaper'" + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE + ", " +
+                AppContract.DiaperEntry._ID + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_ID + ", " +
+                AppContract.DiaperEntry.COLUMN_USER_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_USER_ID + ", " +
+                AppContract.DiaperEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
+                AppContract.DiaperEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
+                AppContract.DiaperEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
+                AppContract.DiaperEntry.COLUMN_TYPE + " || ' ' || " +
+                AppContract.DiaperEntry.COLUMN_CREAM +
+                                    " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
+                AppContract.DiaperEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
+                " FROM " + AppContract.DiaperEntry.TABLE_NAME +
+                " WHERE " +
+                sActivitiesDiaperByUserIdBabyIdSelection;
+
+
+        activitiesSleepingQuery = "SELECT " +
+                "'Sleeping'" + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE + ", " +
+                AppContract.SleepingEntry._ID + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_ID + ", " +
+                AppContract.SleepingEntry.COLUMN_USER_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_USER_ID + ", " +
+                AppContract.SleepingEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
+                AppContract.SleepingEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
+                AppContract.SleepingEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
+                AppContract.SleepingEntry.COLUMN_DURATION + " || " +
+                AppContract.SleepingEntry.COLUMN_WHERE_SLEEP +
+                                    " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
+                AppContract.SleepingEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
+                " FROM " + AppContract.SleepingEntry.TABLE_NAME +
+                " WHERE " +
+                sActivitiesSleepingByUserIdBabyIdSelection;
+
+        activitiesHealthQuery = "SELECT " +
+                "'Health'" + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE + ", " +
+                AppContract.HealthEntry._ID + " AS " + AppContract.ActivitiesEntry.COLUMN_ACTIVITY_ID + ", " +
+                AppContract.HealthEntry.COLUMN_USER_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_USER_ID + ", " +
+                AppContract.HealthEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
+                AppContract.HealthEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
+                AppContract.HealthEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
+                AppContract.HealthEntry.COLUMN_TYPE + " || " +
+                AppContract.HealthEntry.COLUMN_VALUE  +
+                                " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
+                AppContract.HealthEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
+                " FROM " + AppContract.HealthEntry.TABLE_NAME +
+                " WHERE " +
+                sActivitiesHealthByUserIdBabyIdSelection;
+
+
+        String[] subQueries = new String[] {activitiesFeedingQuery,activitiesDiaperQuery,activitiesSleepingQuery,activitiesHealthQuery};
+        return mOpenHelper.getReadableDatabase().rawQuery(sActivitiesQueryBuilder.buildUnionQuery(subQueries, sortOrder, null),selectionArgs);
     }
 
     private Cursor getArticleByType(Uri uri, String[] projection, String sortOrder) {
@@ -648,7 +730,7 @@ public class AppProvider extends ContentProvider {
         matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/*", SLEEPING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_HEALTH, HEALTH);
         matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/*", HEALTH_BY_USERID_BABYID);
-        matcher.addURI(authority, AppContract.PATH_BABY + "/ACTIVITIES/*", ACTIVITIES_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_ACTIVITIES + "/USER/*/BABY/*/DATE/*", ACTIVITIES_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ARTICLE, ARTICLE);
         matcher.addURI(authority, AppContract.PATH_ARTICLE + "/TYPE/*", ARTICLE_BY_TYPE);
         matcher.addURI(authority, AppContract.PATH_ARTICLE + "/CATEGORY/*", ARTICLE_BY_CATEGORY);
@@ -711,7 +793,7 @@ public class AppProvider extends ContentProvider {
             case HEALTH_BY_USERID_BABYID:
                 return AppContract.HealthEntry.CONTENT_ITEM_TYPE;
             case ACTIVITIES_BY_USERID_BABYID:
-                return AppContract.HealthEntry.CONTENT_ITEM_TYPE;
+                return AppContract.ActivitiesEntry.CONTENT_ITEM_TYPE;
             case ARTICLE:
                 return AppContract.ArticleEntry.CONTENT_TYPE;
             case ARTICLE_BY_TYPE:
@@ -773,6 +855,16 @@ public class AppProvider extends ContentProvider {
                     break;
                 }
 
+                case BABY_BY_USERID: {
+                    retCursor = getBabyByUserId(uri, projection, sortOrder);
+                    break;
+                }
+
+                case BABY_BY_USERID_BABYID: {
+                    retCursor = getBabyByUserIdBabyId(uri, projection, sortOrder);
+                    break;
+                }
+
                 case FEEDING_BY_USERID_BABYID: {
                     retCursor = getFeedingByUserIdBabyId(uri, projection, sortOrder);
                     break;
@@ -793,6 +885,10 @@ public class AppProvider extends ContentProvider {
                     break;
                 }
 
+                case ACTIVITIES_BY_USERID_BABYID: {
+                    retCursor = getActivitiesByUserIdBabyId(uri, projection, sortOrder);
+                    break;
+                }
                 case ARTICLE_BY_TYPE: {
                     retCursor = getArticleByType(uri, projection, sortOrder);
                     break;

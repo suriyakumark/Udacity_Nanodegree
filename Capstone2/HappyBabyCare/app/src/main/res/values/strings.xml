@@ -19,7 +19,9 @@
 
     <string name="action_baby_profiles">Baby Profiles</string>
     <string name="action_manage_group">Manage Group</string>
-    <string name="action_select_baby">Select Baby</string>    
+    <string name="action_save">Save</string>
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
 
     <string name="text_sign_in">Sign in with your google account to continue</string>
     <string name="text_date">Date</string>
@@ -34,6 +36,7 @@
     <string name="btn_group_member_remove">Remove</string>
 
     <string name="btn_baby_add">Add Baby</string>
+    <string name="btn_baby_save">Save</string>
     <string name="text_baby_name">Short Name</string>
     <string name="text_baby_birthdate">Birth Date</string>
     <string name="text_baby_due_date">Due Date</string>
