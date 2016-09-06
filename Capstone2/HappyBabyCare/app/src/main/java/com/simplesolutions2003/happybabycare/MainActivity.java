@@ -163,10 +163,12 @@ public class MainActivity extends AppCompatActivity
                         handleFragments(new HealthFragment(), HealthFragment.TAG, HealthFragment.KEEP_IN_STACK);
                         break;
                     case R.id.nav_stories:
-                        handleFragments(new StoriesFragment(), StoriesFragment.TAG, StoriesFragment.KEEP_IN_STACK);
+                        ArticlesFragment.ARTICLE_TYPE = "stories";
+                        handleFragments(new ArticlesFragment(), ArticlesFragment.TAG, ArticlesFragment.KEEP_IN_STACK);
                         break;
                     case R.id.nav_rhymes:
-                        handleFragments(new RhymesFragment(), RhymesFragment.TAG, RhymesFragment.KEEP_IN_STACK);
+                        ArticlesFragment.ARTICLE_TYPE = "rhymes";
+                        handleFragments(new ArticlesFragment(), ArticlesFragment.TAG, ArticlesFragment.KEEP_IN_STACK);
                         break;
                     case R.id.nav_sounds:
                         handleFragments(new SoundsFragment(), SoundsFragment.TAG, SoundsFragment.KEEP_IN_STACK);
@@ -200,16 +202,13 @@ public class MainActivity extends AppCompatActivity
         if(USER_LOGGED_IN) {
             babyProfilesMenuItem.setVisible(true);
             manageGroupMenuItem.setVisible(true);
-            //spinnerSelectBaby.setVisibility(View.VISIBLE);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }else{
             babyProfilesMenuItem.setVisible(false);
             manageGroupMenuItem.setVisible(false);
-            //spinnerSelectBaby.setVisibility(View.GONE);
             drawer.closeDrawer(GravityCompat.START);
             drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         }
-        ActivityCompat.invalidateOptionsMenu(activity);
     }
 
     public void handleFragments(Fragment fragment, String tag, boolean addToStack){

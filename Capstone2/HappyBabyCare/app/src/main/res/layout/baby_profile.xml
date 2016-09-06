@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+	android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorAccentLight">
         
@@ -18,6 +19,7 @@
 		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:maxLines="1"
 		android:padding="8dp"
 		android:hint="@string/text_baby_name" />
             
@@ -56,11 +58,9 @@
 	<EditText
 		android:id="@+id/baby_due_date"
 		android:layout_gravity="center_horizontal"
-		android:descendantFocusability="blocksDescendants"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:padding="8dp"
 		android:hint="@string/text_baby_due_date" />
-
 
 </LinearLayout>

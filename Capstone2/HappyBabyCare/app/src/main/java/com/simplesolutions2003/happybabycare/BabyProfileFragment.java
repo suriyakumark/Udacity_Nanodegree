@@ -115,7 +115,7 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                validateInputs();
+                //ActivityCompat.invalidateOptionsMenu(getActivity());
             }
 
             @Override
@@ -125,7 +125,7 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                ActivityCompat.invalidateOptionsMenu(getActivity());
             }
         });
 
@@ -133,7 +133,9 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                validateInputs();
+
+                new Utilities(getActivity()).resetFocus(babyBirthDate);
+                ActivityCompat.invalidateOptionsMenu(getActivity());
             }
 
             @Override
@@ -151,7 +153,9 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                validateInputs();
+
+                new Utilities(getActivity()).resetFocus(babyDueDate);
+                ActivityCompat.invalidateOptionsMenu(getActivity());
             }
 
             @Override
@@ -205,7 +209,6 @@ public class BabyProfileFragment extends Fragment {
                 MainActivity.ACTIVE_BABY_ID = -1;
             }
         }
-        validateInputs();
         return rootView;
     }
 
@@ -215,6 +218,13 @@ public class BabyProfileFragment extends Fragment {
         inflater.inflate(R.menu.save_delete, menu);
         saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
         deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+    }
+
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        validateInputs();
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -232,12 +242,6 @@ public class BabyProfileFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu){
-        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -259,20 +263,16 @@ public class BabyProfileFragment extends Fragment {
 
     public void validateInputs() {
         if(saveMenuItem != null) {
-            if(babyName.getText().toString().isEmpty() |
-                babyBirthDate.getText().toString().isEmpty() |
-                babyDueDate.getText().toString().isEmpty() |
-                babyName.getText().toString().equals(getResources().getString(R.string.text_baby_name)) |
-                babyBirthDate.getText().toString().equals(getResources().getString(R.string.text_baby_birthdate)) |
-                babyDueDate.getText().toString().equals(getResources().getString(R.string.text_baby_due_date))){
-
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(130);
-                Log.v(TAG, "save disabled");
-            }else{
+            if(!babyName.getText().toString().isEmpty() &
+                !babyBirthDate.getText().toString().isEmpty() &
+                !babyDueDate.getText().toString().isEmpty()){
                 saveMenuItem.setEnabled(true);
                 saveMenuItem.getIcon().setAlpha(255);
                 Log.v(TAG, "save enabled");
+            }else{
+                saveMenuItem.setEnabled(false);
+                saveMenuItem.getIcon().setAlpha(100);
+                Log.v(TAG, "save disabled");
             }
         }
         if(deleteMenuItem != null) {
@@ -282,11 +282,11 @@ public class BabyProfileFragment extends Fragment {
                 Log.v(TAG, "DELETE enabled");
             } else {
                 deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(130);
+                deleteMenuItem.getIcon().setAlpha(100);
                 Log.v(TAG, "DELETE disabled");
             }
         }
-        ActivityCompat.invalidateOptionsMenu(getActivity());
+
     }
 
     public void setBabyProfilePhoto(){

@@ -25,14 +25,14 @@ public class ActivitiesAdapter extends CursorAdapter {
     public static class ViewHolder {
 
         public final ImageView activityIcon;
-        public final TextView activityDate;
+        //public final TextView activityDate;
         public final TextView activityTime;
         public final TextView activitySummary;
         public final TextView activityDetail;
 
         public ViewHolder(View view) {
             activityIcon = (ImageView) view.findViewById(R.id.activity_icon);
-            activityDate = (TextView) view.findViewById(R.id.activity_date);
+            //activityDate = (TextView) view.findViewById(R.id.activity_date);
             activityTime = (TextView) view.findViewById(R.id.activity_time);
             activitySummary = (TextView) view.findViewById(R.id.activity_summary);
             activityDetail = (TextView) view.findViewById(R.id.activity_detail);
@@ -80,7 +80,7 @@ public class ActivitiesAdapter extends CursorAdapter {
                     break;
             }
 
-            viewHolder.activityDate.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_DATE));
+            //viewHolder.activityDate.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_DATE));
             viewHolder.activityTime.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_TIME));
             viewHolder.activitySummary.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_SUMMARY));
             viewHolder.activityDetail.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_DETAIL));

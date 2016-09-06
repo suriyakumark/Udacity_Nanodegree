@@ -187,6 +187,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 ArticleEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_CATEGORY + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+                ArticleEntry.COLUMN_COVER_PIC + " TEXT, " +
                 ArticleEntry.COLUMN_LAST_UPDATED_TS + " TIMESTAMP);";
 
         final String SQL_CREATE_ARTICLE_DETAIL_TABLE = "CREATE TABLE " + ArticleDetailEntry.TABLE_NAME + " (" +
@@ -233,6 +234,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
         sqLiteDatabase.execSQL(SQL_CREATE_ARTICLE_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_ARTICLE_DETAIL_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_MEDIA_TABLE);
+
     }
 
     @Override

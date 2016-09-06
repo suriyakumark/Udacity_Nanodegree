@@ -46,18 +46,19 @@
     
     <string name="text_feeding_date">Date</string>
     <string name="text_feeding_time">Time</string>
-    <string name="btn_feeding_nursing">Nursing</string>
-    <string name="btn_feeding_nursing_left">L</string>
-    <string name="btn_feeding_nursing_right">R</string>
-    <string name="btn_feeding_pumped">Pumped</string>
-    <string name="btn_feeding_pumped_qty">Qty</string>
-    <string name="btn_feeding_formula">Formula</string>
-    <string name="btn_feeding_formula_qty">Qty</string>
-    <string name="btn_feeding_Others">Others</string>
-    <string name="btn_feeding_Others_type">Type</string>
-    <string name="btn_feeding_Others_qty">Qty</string>
+    <string name="text_feeding_type">What food?</string>
+    <string name="text_feeding_qty">Quantity</string>
     <string name="text_feeding_notes">Notes</string>
-    
+
+    <string-array name="spinner_feeding_type">
+        <item>Nursing</item>
+        <item>Pumped Breastmilk</item>
+        <item>Formula</item>
+        <item>Solid</item>
+        <item>Water</item>
+        <item>Others</item>
+    </string-array>
+
     <string name="text_diaper_date">Date</string>
     <string name="text_diaper_time">Time</string>
     <string name="btn_diaper_wet">Wet</string>
@@ -69,12 +70,32 @@
     <string name="text_sleeping_date">Date</string>
     <string name="text_sleeping_time">Time</string>
     <string name="text_sleeping_duration">Duration</string>
+    <string name="text_sleeping_where">Where?</string>
     <string name="text_sleeping_notes">Notes</string>
-    
+
+    <string-array name="spinner_sleep_where">
+        <item>Crib</item>
+        <item>Bed</item>
+        <item>Lap</item>
+        <item>Chest</item>
+        <item>Car Seat</item>
+        <item>Rocker or Swing</item>
+    </string-array>
+
     <string name="text_health_date">Date</string>
     <string name="text_health_time">Time</string>
     <string name="text_health_summary">Summary</string>
+    <string name="text_health_title">Title</string>
     <string name="text_health_notes">Notes</string>
+
+    <string-array name="spinner_health_title">
+        <item>Temperature</item>
+        <item>Height</item>
+        <item>Weight</item>
+        <item>Vaccination</item>
+        <item>Sickness</item>
+        <item>Others</item>
+    </string-array>
     
     <string name="btn_sounds_play">Play</string>
     <string name="btn_sounds_pause">Pause</string>

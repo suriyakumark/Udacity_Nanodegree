@@ -14,21 +14,22 @@
         android:id="@+id/activity_icon" />
     <LinearLayout
         android:orientation="vertical"
-        android:layout_gravity="left"
-        android:gravity="left"
+        android:layout_gravity="start|center_vertical"
+        android:gravity="start|center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <!--TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:gravity="left"
-            android:id="@+id/activity_date" />
+            android:id="@+id/activity_date" /-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:gravity="left"
+            android:layout_gravity="start|center_vertical"
+            android:gravity="start|center_vertical"
+            android:textSize="20dp"
             android:id="@+id/activity_time" />
     </LinearLayout>
 
@@ -44,12 +45,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:gravity="left"
+            android:textSize="20dp"
             android:id="@+id/activity_summary" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:gravity="left"
+            android:textSize="12dp"
             android:id="@+id/activity_detail" />
     </LinearLayout>
     <View android:layout_width="0dp"

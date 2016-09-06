@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -129,7 +130,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                         MainActivity.USER_LOGGED_IN = false;
                         MainActivity.LOGGED_IN_USER_ID = null;
                         signInButton.setEnabled(true);
-                        MainActivity.updateMenuVisibility(getActivity());
+                        ActivityCompat.invalidateOptionsMenu(getActivity());
                         ACTION_SIGN_OUT = false;
                     }
                 });
@@ -152,7 +153,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             MainActivity.USER_LOGGED_IN = true;
-            MainActivity.updateMenuVisibility(getActivity());
+            ActivityCompat.invalidateOptionsMenu(getActivity());
 
             signInButton.setEnabled(false);
             if(acct.getEmail()!=null) {
@@ -167,6 +168,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
         } else {
             signInButton.setEnabled(true);
             MainActivity.USER_LOGGED_IN = false;
+            ActivityCompat.invalidateOptionsMenu(getActivity());
             if(!ACTION_SIGN_SILENT) {
                 Toast.makeText(getActivity(), "Sign In not successful", Toast.LENGTH_LONG).show();
             }

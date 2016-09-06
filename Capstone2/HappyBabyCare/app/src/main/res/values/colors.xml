@@ -6,6 +6,7 @@
     <color name="colorAccentLight">#BBDEFB</color>
     <color name="colorAccent">#64B5F6</color>
     <color name="colorAccentDark">#1E88E5</color>
+    <color name="color_text_bg">#ffffff</color>
     <color name="color_text_title_small">#000000</color>
     <color name="color_text_title_big">#fff</color>
     <color name="color_text_subtitle">#8fff</color>

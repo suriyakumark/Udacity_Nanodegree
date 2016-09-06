@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -103,8 +104,11 @@ public class DiaperFragment extends Fragment {
         diaperMixed = (ImageButton) rootView.findViewById(R.id.diaper_mixed);
         diaperDry = (ImageButton) rootView.findViewById(R.id.diaper_dry);
 
+        activityDate.setInputType(InputType.TYPE_NULL);
+        activityTime.setInputType(InputType.TYPE_NULL);
         activityDate.setText(new Utilities(getActivity()).getCurrentDateDB());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
+
         setDiaperType(0);
 
         diaperWet.setOnClickListener(new View.OnClickListener() {
@@ -140,6 +144,7 @@ public class DiaperFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                new Utilities(getActivity()).resetFocus(activityDate);
                 validateInputs();
             }
 
@@ -159,6 +164,7 @@ public class DiaperFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                new Utilities(getActivity()).resetFocus(activityTime);
                 validateInputs();
             }
 
@@ -177,22 +183,21 @@ public class DiaperFragment extends Fragment {
         SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
 
         if(DIAPER_ID != -1) {
-            Uri diaper_uri = AppContract.DiaperEntry.buildDiaperUri(DIAPER_ID);
-            Cursor diaperEntry = getActivity().getContentResolver().query(diaper_uri,DIAPER_COLUMNS,null,null,null);
-            if(diaperEntry != null){
-                if(diaperEntry.getCount() > 0){
+            Uri uri = AppContract.DiaperEntry.buildDiaperUri(DIAPER_ID);
+            Cursor activityEntry = getActivity().getContentResolver().query(uri,DIAPER_COLUMNS,null,null,null);
+            if(activityEntry != null){
+                if(activityEntry.getCount() > 0){
                     Log.v(TAG,"got diaper entry");
-                    diaperEntry.moveToFirst();
-                    activityDate.setText(diaperEntry.getString(COL_DIAPER_DATE));
-                    activityTime.setText(diaperEntry.getString(COL_DIAPER_TIME));
-                    setDiaperType(getDiaperTypeId(diaperEntry.getString(COL_DIAPER_TYPE)));
-                    activityNotes.setText(diaperEntry.getString(COL_DIAPER_NOTES));
+                    activityEntry.moveToFirst();
+                    activityDate.setText(activityEntry.getString(COL_DIAPER_DATE));
+                    activityTime.setText(activityEntry.getString(COL_DIAPER_TIME));
+                    setDiaperType(getDiaperTypeId(activityEntry.getString(COL_DIAPER_TYPE)));
+                    activityNotes.setText(activityEntry.getString(COL_DIAPER_NOTES));
                 }
             }else{
                 DIAPER_ID = -1;
             }
         }
-        validateInputs();
         return rootView;
     }
 
@@ -224,6 +229,7 @@ public class DiaperFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu){
+        validateInputs();
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -257,7 +263,7 @@ public class DiaperFragment extends Fragment {
 
     public void actionSave(){
         Log.v(TAG, "actionSave");
-        Uri diaper_uri = AppContract.DiaperEntry.CONTENT_URI;
+        Uri uri = AppContract.DiaperEntry.CONTENT_URI;
 
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.DiaperEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
@@ -269,16 +275,16 @@ public class DiaperFragment extends Fragment {
         newValues.put(AppContract.DiaperEntry.COLUMN_NOTES, activityNotes.getText().toString());
         //Log.v(TAG,"newValues-"+newValues);
         if(DIAPER_ID == -1) {
-            DIAPER_ID = AppContract.BabyEntry.getIdFromUri(getActivity().getContentResolver().insert(diaper_uri, newValues));
+            DIAPER_ID = AppContract.DiaperEntry.getIdFromUri(getActivity().getContentResolver().insert(uri, newValues));
             if(DIAPER_ID == -1){
                 Toast.makeText(getActivity(), "Could not save diaper entry", Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(getActivity(), "Diaper entry added", Toast.LENGTH_LONG).show();
             }
         }else{
-            String diaperWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
-            String[] diaperWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
-            getActivity().getContentResolver().update(diaper_uri, newValues, diaperWhere,diaperWhereArgs);
+            String sWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
+            String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
+            getActivity().getContentResolver().update(uri, newValues, sWhere,sWhereArgs);
             Toast.makeText(getActivity(), "Diaper entry saved", Toast.LENGTH_LONG).show();
         }
         goBack();
@@ -287,10 +293,10 @@ public class DiaperFragment extends Fragment {
     public void actionDelete(){
         Log.v(TAG, "actionDelete");
 
-        Uri diaper_uri = AppContract.DiaperEntry.CONTENT_URI;
-        String diaperWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
-        String[] diaperWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
-        getActivity().getContentResolver().delete(diaper_uri, diaperWhere, diaperWhereArgs);
+        Uri uri = AppContract.DiaperEntry.CONTENT_URI;
+        String sWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
+        String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
+        getActivity().getContentResolver().delete(uri, sWhere, sWhereArgs);
         Toast.makeText(getActivity(), "Diaper entry deleted", Toast.LENGTH_LONG).show();
         DIAPER_ID = -1;
         goBack();

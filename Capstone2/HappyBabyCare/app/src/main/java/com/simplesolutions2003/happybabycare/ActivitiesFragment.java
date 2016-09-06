@@ -7,6 +7,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,8 +17,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -66,9 +71,66 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
 
         activitiesListView = (ListView) rootView.findViewById(R.id.activities_listview);
         activityFilterDate = (EditText) rootView.findViewById(R.id.activities_filter_date);
-        activityFilterDate.setText(new Utilities(getActivity()).getCurrentDateDB());
         activitiesListAdapter = new ActivitiesAdapter(getActivity(),null,0);
         activitiesListView.setAdapter(activitiesListAdapter);
+
+        activityFilterDate.setInputType(InputType.TYPE_NULL);
+        activityFilterDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+
+        activityFilterDate.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                new Utilities(getActivity()).resetFocus(activityFilterDate);
+                refreshData();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        });
+
+        SetDateEditText setActivityFilterDate = new SetDateEditText(activityFilterDate, getActivity());
+
+        activitiesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                //need to handle scroll to previous position when returning from youtube/share
+                dPosition = activitiesListView.getScrollY();
+                Log.v(TAG,"setOnItemClickListener - dPosition " + dPosition);
+
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                switch(cursor.getString(COL_ACTIVITY_TYPE)){
+                    case "Feeding":
+                        FeedingFragment.FEEDING_ID = cursor.getLong(COL_ACTIVITY_ID);
+                        ((MainActivity) getActivity()).handleFragments(new FeedingFragment(),FeedingFragment.TAG,FeedingFragment.KEEP_IN_STACK);
+                        break;
+                    case "Diaper":
+                        DiaperFragment.DIAPER_ID = cursor.getLong(COL_ACTIVITY_ID);
+                        ((MainActivity) getActivity()).handleFragments(new DiaperFragment(),DiaperFragment.TAG,DiaperFragment.KEEP_IN_STACK);
+                        break;
+                    case "Sleeping":
+                        SleepingFragment.SLEEPING_ID = cursor.getLong(COL_ACTIVITY_ID);
+                        ((MainActivity) getActivity()).handleFragments(new SleepingFragment(),SleepingFragment.TAG,SleepingFragment.KEEP_IN_STACK);
+                        break;
+                    case "Health":
+                        HealthFragment.HEALTH_ID = cursor.getLong(COL_ACTIVITY_ID);
+                        ((MainActivity) getActivity()).handleFragments(new HealthFragment(),HealthFragment.TAG,HealthFragment.KEEP_IN_STACK);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        });
 
         return rootView;
     }
@@ -104,6 +166,8 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
             if (cursor.getCount() > 0) {
                 activitiesListAdapter.swapCursor(cursor);
             }
+        }else{
+            activitiesListAdapter.swapCursor(null);
         }
 
         //scroll to top, after listview are loaded it focuses on listview
@@ -121,4 +185,8 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
         activitiesListAdapter.swapCursor(null);
     }
 
+    private void refreshData(){
+        getLoaderManager().restartLoader(ACTIVITIES_LOADER, null, this);
+        //activitiesListAdapter.notifyDataSetChanged();
+    }
 }

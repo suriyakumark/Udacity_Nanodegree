@@ -6,5 +6,6 @@
         android:id="@+id/activity_notes"
         android:layout_width="match_parent"
         android:layout_height="128dp"
+        android:maxLines="6"
         android:hint="Notes" />
 </LinearLayout>

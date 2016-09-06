@@ -50,14 +50,18 @@ public class AppProvider extends ContentProvider {
     static final int BABY_BY_USERID = 501;
     static final int BABY_BY_USERID_BABYID = 502;
     static final int FEEDING = 600;
-    static final int FEEDING_BY_USERID_BABYID = 601;
+    static final int FEEDING_BY_ID = 601;
+    static final int FEEDING_BY_USERID_BABYID = 602;
     static final int DIAPER = 700;
-    static final int DIAPER_BY_USERID_BABYID = 701;
+    static final int DIAPER_BY_ID = 701;
+    static final int DIAPER_BY_USERID_BABYID = 702;
     static final int SLEEPING = 800;
-    static final int SLEEPING_BY_USERID_BABYID = 801;
+    static final int SLEEPING_BY_ID = 801;
+    static final int SLEEPING_BY_USERID_BABYID = 802;
     static final int HEALTH = 900;
-    static final int HEALTH_BY_USERID_BABYID = 901;
-    static final int ACTIVITIES_BY_USERID_BABYID = 902;
+    static final int HEALTH_BY_ID = 901;
+    static final int HEALTH_BY_USERID_BABYID = 902;
+    static final int ACTIVITIES_BY_USERID_BABYID = 903;
     static final int ARTICLE = 1000;
     static final int ARTICLE_BY_TYPE = 1001;
     static final int ARTICLE_BY_CATEGORY = 1002;
@@ -154,46 +158,6 @@ public class AppProvider extends ContentProvider {
 
     static{
         sActivitiesQueryBuilder = new SQLiteQueryBuilder();
-/*
-        sActivitiesQueryBuilder.setTables(
-                AppContract.BabyEntry.TABLE_NAME +
-                        " LEFT OUTER JOIN " + AppContract.DiaperEntry.TABLE_NAME +
-                        " ON " + AppContract.UserEntry.TABLE_NAME +
-                        "." + AppContract.UserEntry._ID +
-                        " = " + AppContract.DiaperEntry.TABLE_NAME +
-                        "." + AppContract.DiaperEntry.COLUMN_USER_ID +
-                        " AND " + AppContract.BabyEntry.TABLE_NAME +
-                        "." + AppContract.BabyEntry._ID +
-                        " = " + AppContract.DiaperEntry.TABLE_NAME +
-                        "." + AppContract.DiaperEntry.COLUMN_BABY_ID +
-                        " LEFT OUTER JOIN " + AppContract.FeedingEntry.TABLE_NAME +
-                        " ON " + AppContract.UserEntry.TABLE_NAME +
-                        "." + AppContract.UserEntry._ID +
-                        " = " + AppContract.FeedingEntry.TABLE_NAME +
-                        "." + AppContract.FeedingEntry.COLUMN_USER_ID +
-                        " AND " + AppContract.BabyEntry.TABLE_NAME +
-                        "." + AppContract.BabyEntry._ID +
-                        " = " + AppContract.FeedingEntry.TABLE_NAME +
-                        "." + AppContract.FeedingEntry.COLUMN_BABY_ID +
-                        " LEFT OUTER JOIN " + AppContract.SleepingEntry.TABLE_NAME +
-                        " ON " + AppContract.UserEntry.TABLE_NAME +
-                        "." + AppContract.UserEntry._ID +
-                        " = " + AppContract.SleepingEntry.TABLE_NAME +
-                        "." + AppContract.SleepingEntry.COLUMN_USER_ID +
-                        " AND " + AppContract.BabyEntry.TABLE_NAME +
-                        "." + AppContract.BabyEntry._ID +
-                        " = " + AppContract.SleepingEntry.TABLE_NAME +
-                        "." + AppContract.SleepingEntry.COLUMN_BABY_ID +
-                        " LEFT OUTER JOIN " + AppContract.HealthEntry.TABLE_NAME +
-                        " ON " + AppContract.UserEntry.TABLE_NAME +
-                        "." + AppContract.UserEntry._ID +
-                        " = " + AppContract.HealthEntry.TABLE_NAME +
-                        "." + AppContract.HealthEntry.COLUMN_USER_ID +
-                        " AND " + AppContract.BabyEntry.TABLE_NAME +
-                        "." + AppContract.BabyEntry._ID +
-                        " = " + AppContract.HealthEntry.TABLE_NAME +
-                        "." + AppContract.HealthEntry.COLUMN_BABY_ID);
-                        */
     }
 
     static{
@@ -460,17 +424,49 @@ public class AppProvider extends ContentProvider {
         );
     }
 
+    private Cursor getFeedingById(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getFeedingById uri - " + uri);
+        String _Id = Long.toString(AppContract.FeedingEntry.getIdFromUri(uri));
+        Log.v(LOG_TAG, "getFeedingById _Id - " + _Id);
+
+        return sFeedingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sFeedingSelection,
+                new String[]{_Id},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
     private Cursor getFeedingByUserIdBabyId(Uri uri, String[] projection, String sortOrder) {
 
-        Log.v(LOG_TAG, "getFeedingByUserId uri - " + uri);
+        Log.v(LOG_TAG, "getFeedingByUserIdBabyId uri - " + uri);
         String userId = AppContract.FeedingEntry.getUserIdFromUri(uri);
         String babyId = Long.toString(AppContract.FeedingEntry.getBabyIdFromUri(uri));
-        Log.v(LOG_TAG, "getFeedingByUserId userId - " + userId + " BabyId - " + babyId);
+        Log.v(LOG_TAG, "getFeedingByUserIdBabyId userId - " + userId + " BabyId - " + babyId);
 
         return sFeedingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 sFeedingByUserIdBabyIdSelection,
                 new String[]{userId,babyId},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getDiaperById(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getDiaperById uri - " + uri);
+        String _Id = Long.toString(AppContract.DiaperEntry.getIdFromUri(uri));
+        Log.v(LOG_TAG, "getDiaperById _Id - " + _Id);
+
+        return sDiaperQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sDiaperSelection,
+                new String[]{_Id},
                 null,
                 null,
                 sortOrder
@@ -494,6 +490,21 @@ public class AppProvider extends ContentProvider {
         );
     }
 
+    private Cursor getSleepingById(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getSleepingById uri - " + uri);
+        String _Id = Long.toString(AppContract.SleepingEntry.getIdFromUri(uri));
+        Log.v(LOG_TAG, "getSleepingById _Id - " + _Id);
+
+        return sSleepingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sSleepingSelection,
+                new String[]{_Id},
+                null,
+                null,
+                sortOrder
+        );
+    }
 
     private Cursor getSleepingByUserIdBabyId(Uri uri, String[] projection, String sortOrder) {
 
@@ -506,6 +517,22 @@ public class AppProvider extends ContentProvider {
                 projection,
                 sSleepingByUserIdBabyIdSelection,
                 new String[]{userId,babyId},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getHealthById(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getHealthById uri - " + uri);
+        String _Id = Long.toString(AppContract.HealthEntry.getIdFromUri(uri));
+        Log.v(LOG_TAG, "getHealthById _Id - " + _Id);
+
+        return sHealthQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sHealthSelection,
+                new String[]{_Id},
                 null,
                 null,
                 sortOrder
@@ -552,7 +579,7 @@ public class AppProvider extends ContentProvider {
                 AppContract.FeedingEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
                 AppContract.FeedingEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
                 AppContract.FeedingEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
-                AppContract.FeedingEntry.COLUMN_TYPE + " || " +
+                AppContract.FeedingEntry.COLUMN_TYPE + " || ' ' || " +
                 AppContract.FeedingEntry.COLUMN_QUANTITY +
                                     " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
                 AppContract.FeedingEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
@@ -583,7 +610,7 @@ public class AppProvider extends ContentProvider {
                 AppContract.SleepingEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
                 AppContract.SleepingEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
                 AppContract.SleepingEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
-                AppContract.SleepingEntry.COLUMN_DURATION + " || " +
+                AppContract.SleepingEntry.COLUMN_DURATION + " || ' ' || " +
                 AppContract.SleepingEntry.COLUMN_WHERE_SLEEP +
                                     " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
                 AppContract.SleepingEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
@@ -598,7 +625,7 @@ public class AppProvider extends ContentProvider {
                 AppContract.HealthEntry.COLUMN_BABY_ID + " AS " + AppContract.ActivitiesEntry.COLUMN_BABY_ID + ", " +
                 AppContract.HealthEntry.COLUMN_DATE + " AS " + AppContract.ActivitiesEntry.COLUMN_DATE + ", " +
                 AppContract.HealthEntry.COLUMN_TIME + " AS " + AppContract.ActivitiesEntry.COLUMN_TIME + ", " +
-                AppContract.HealthEntry.COLUMN_TYPE + " || " +
+                AppContract.HealthEntry.COLUMN_TYPE + " || ' ' || " +
                 AppContract.HealthEntry.COLUMN_VALUE  +
                                 " AS " + AppContract.ActivitiesEntry.COLUMN_SUMMARY + ", " +
                 AppContract.HealthEntry.COLUMN_NOTES + " AS " + AppContract.ActivitiesEntry.COLUMN_DETAIL +
@@ -723,12 +750,16 @@ public class AppProvider extends ContentProvider {
         matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*", BABY_BY_USERID);
         matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*/BABY/*", BABY_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_FEEDING, FEEDING);
+        matcher.addURI(authority, AppContract.PATH_FEEDING + "/*", FEEDING_BY_ID);
         matcher.addURI(authority, AppContract.PATH_FEEDING + "/USER/*/BABY/*", FEEDING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_DIAPER, DIAPER);
+        matcher.addURI(authority, AppContract.PATH_DIAPER + "/*", DIAPER_BY_ID);
         matcher.addURI(authority, AppContract.PATH_DIAPER + "/USER/*/BABY/*", DIAPER_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_SLEEPING, SLEEPING);
+        matcher.addURI(authority, AppContract.PATH_SLEEPING + "/*", SLEEPING_BY_ID);
         matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/*", SLEEPING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_HEALTH, HEALTH);
+        matcher.addURI(authority, AppContract.PATH_HEALTH + "/*", HEALTH_BY_ID);
         matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/*", HEALTH_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ACTIVITIES + "/USER/*/BABY/*/DATE/*", ACTIVITIES_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ARTICLE, ARTICLE);
@@ -865,8 +896,18 @@ public class AppProvider extends ContentProvider {
                     break;
                 }
 
+                case FEEDING_BY_ID: {
+                    retCursor = getFeedingById(uri, projection, sortOrder);
+                    break;
+                }
+
                 case FEEDING_BY_USERID_BABYID: {
                     retCursor = getFeedingByUserIdBabyId(uri, projection, sortOrder);
+                    break;
+                }
+
+                case DIAPER_BY_ID: {
+                    retCursor = getDiaperById(uri, projection, sortOrder);
                     break;
                 }
 
@@ -875,8 +916,18 @@ public class AppProvider extends ContentProvider {
                     break;
                 }
 
+                case SLEEPING_BY_ID: {
+                    retCursor = getSleepingById(uri, projection, sortOrder);
+                    break;
+                }
+
                 case SLEEPING_BY_USERID_BABYID: {
                     retCursor = getSleepingByUserIdBabyId(uri, projection, sortOrder);
+                    break;
+                }
+
+                case HEALTH_BY_ID: {
+                    retCursor = getHealthById(uri, projection, sortOrder);
                     break;
                 }
 

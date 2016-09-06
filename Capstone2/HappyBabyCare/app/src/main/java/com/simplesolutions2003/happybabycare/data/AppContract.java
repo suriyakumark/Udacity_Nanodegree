@@ -483,6 +483,7 @@ public class AppContract {
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_CATEGORY = "category";
         public static final String COLUMN_TITLE = "title";
+        public static final String COLUMN_COVER_PIC = "cover_pic";
         public static final String COLUMN_LAST_UPDATED_TS = "last_updated_timestamp";
 
         public static Uri buildArticleUri(long _id) {

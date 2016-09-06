@@ -3,11 +3,17 @@
     android:id="@+id/activities_layout"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     android:background="@color/colorAccentLight">
     <EditText
         android:id="@+id/activities_filter_date"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@color/color_text_bg"
         android:padding="8dp"
         android:hint="Date" />
     <ListView

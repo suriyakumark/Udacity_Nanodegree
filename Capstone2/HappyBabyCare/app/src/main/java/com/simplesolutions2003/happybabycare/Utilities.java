@@ -1,6 +1,7 @@
 package com.simplesolutions2003.happybabycare;
 
 import android.content.Context;
+import android.view.View;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,5 +25,12 @@ public class Utilities {
 
     public String getCurrentTimeDB(){
         return db_time_fmt.format(new Date().getTime());
+    }
+
+    public void resetFocus(View view){
+        view.setFocusableInTouchMode(false);
+        view.setFocusable(false);
+        view.setFocusableInTouchMode(true);
+        view.setFocusable(true);
     }
 }

@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorAccentLight">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Health Record" />
+    android:id="@+id/health_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:background="@color/colorAccentLight">
+
+    <include layout="@layout/date_time" />
+
+    <Spinner
+        android:id="@+id/health_title"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:entries="@array/spinner_health_title"
+        android:prompt="@string/text_health_title" />
+
+    <EditText
+        android:id="@+id/health_summary"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:maxLines="2"
+        android:hint="@string/text_health_summary" />
+
+    <include layout="@layout/notes" />
+
 </LinearLayout>
