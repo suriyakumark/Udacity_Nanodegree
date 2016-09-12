@@ -202,7 +202,7 @@ public class HealthFragment extends Fragment {
 
         SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
         SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(HEALTH_ID != -1) {
@@ -212,7 +212,7 @@ public class HealthFragment extends Fragment {
                 if(activityEntry.getCount() > 0){
                     Log.v(TAG,"got health entry");
                     activityEntry.moveToFirst();
-                    activityDate.setText(activityEntry.getString(COL_HEALTH_DATE));
+                    activityDate.setText(new Utilities(getActivity()).convDateDb2Disp(activityEntry.getString(COL_HEALTH_DATE)));
                     activityTime.setText(activityEntry.getString(COL_HEALTH_TIME));
                     activityNotes.setText(activityEntry.getString(COL_HEALTH_NOTES));
                     for(int iType = 0; iType < healthType.getCount(); iType++){
@@ -229,6 +229,14 @@ public class HealthFragment extends Fragment {
             }
         }
         return rootView;
+    }
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle("Health - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
     @Override
@@ -299,7 +307,7 @@ public class HealthFragment extends Fragment {
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.HealthEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
         newValues.put(AppContract.HealthEntry.COLUMN_BABY_ID, MainActivity.ACTIVE_BABY_ID);
-        newValues.put(AppContract.HealthEntry.COLUMN_DATE, activityDate.getText().toString());
+        newValues.put(AppContract.HealthEntry.COLUMN_DATE, new Utilities(getActivity()).convDateDisp2Db(activityDate.getText().toString()));
         newValues.put(AppContract.HealthEntry.COLUMN_TIME, activityTime.getText().toString());
         newValues.put(AppContract.HealthEntry.COLUMN_TYPE, healthType.getSelectedItem().toString());
         newValues.put(AppContract.HealthEntry.COLUMN_VALUE, healthValue.getText().toString());

@@ -19,42 +19,47 @@
             android:text="Create or Join a group" />
 
         <EditText
-            android:id="@+id/group_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/group_id"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:maxLength="25"
-            android:text="" />
+            android:maxLength="50"
+            android:maxLines="1"
+            android:hint="Group Id" />
+        <Button
+            android:id="@+id/group_join"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="16dp"
+            android:text="Join" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <Button
-                android:id="@+id/group_create"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:layout_margin="16dp"
-                android:text="Create" />
-
-            <Button
-                android:id="@+id/group_join"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark"
-                android:layout_margin="16dp"
-                android:text="Join" />
-        </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/group_skip"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_gravity="bottom|right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        android:layout_margin="16dp"
-        android:text="Skip" />
+        android:gravity="bottom|right"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/group_create"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="16dp"
+            android:text="Create" />
 
+        <Button
+            android:id="@+id/group_skip"
+            android:layout_gravity="bottom|right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:layout_margin="16dp"
+            android:text="Skip" />
+
+    </LinearLayout>
 </FrameLayout>

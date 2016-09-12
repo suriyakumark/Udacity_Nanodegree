@@ -98,6 +98,7 @@ public class BabyFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onResume()
     {
         super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle("Baby Profiles");
         getLoaderManager().initLoader(BABY_LOADER, null, this);
     }
 

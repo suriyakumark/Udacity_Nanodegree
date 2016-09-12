@@ -26,6 +26,7 @@ public class AppProvider extends ContentProvider {
     private static final SQLiteQueryBuilder sUserQueryBuilder;
     private static final SQLiteQueryBuilder sUserPrefQueryBuilder;
     private static final SQLiteQueryBuilder sSyncLogQueryBuilder;
+    private static final SQLiteQueryBuilder sGroupQueryBuilder;
     private static final SQLiteQueryBuilder sBabyQueryBuilder;
     private static final SQLiteQueryBuilder sFeedingQueryBuilder;
     private static final SQLiteQueryBuilder sDiaperQueryBuilder;
@@ -45,7 +46,10 @@ public class AppProvider extends ContentProvider {
     static final int USER_PREF = 300;
     static final int USER_PREF_BY_USERID = 301;
     static final int SYNC_LOG = 400;
-    static final int SYNC_LOG_BY_USER = 401;
+    static final int SYNC_LOG_BY_USERID = 401;
+    static final int GROUP = 4000;
+    static final int GROUP_BY_GROUPID = 4001;
+    static final int GROUP_BY_GROUPID_MEMBERID = 4002;
     static final int BABY = 500;
     static final int BABY_BY_USERID = 501;
     static final int BABY_BY_USERID_BABYID = 502;
@@ -61,7 +65,7 @@ public class AppProvider extends ContentProvider {
     static final int HEALTH = 900;
     static final int HEALTH_BY_ID = 901;
     static final int HEALTH_BY_USERID_BABYID = 902;
-    static final int ACTIVITIES_BY_USERID_BABYID = 903;
+    static final int ACTIVITIES_BY_USERID_BABYID = 904;
     static final int ARTICLE = 1000;
     static final int ARTICLE_BY_TYPE = 1001;
     static final int ARTICLE_BY_CATEGORY = 1002;
@@ -98,6 +102,13 @@ public class AppProvider extends ContentProvider {
 
         sSyncLogQueryBuilder.setTables(
                 AppContract.SyncLogEntry.TABLE_NAME);
+    }
+
+    static{
+        sGroupQueryBuilder = new SQLiteQueryBuilder();
+
+        sGroupQueryBuilder.setTables(
+                AppContract.GroupEntry.TABLE_NAME);
     }
 
     static{
@@ -203,6 +214,20 @@ public class AppProvider extends ContentProvider {
     private static final String sSyncLogByUserIdSelection =
             AppContract.SyncLogEntry.TABLE_NAME +
                     "." + AppContract.SyncLogEntry.COLUMN_USER_ID + " = ? ";
+
+    private static final String sGroupSelection =
+            AppContract.GroupEntry.TABLE_NAME +
+                    "." + AppContract.GroupEntry._ID + " = ? ";
+
+    private static final String sGroupByGroupIdSelection =
+            AppContract.GroupEntry.TABLE_NAME +
+                    "." + AppContract.GroupEntry.COLUMN_GROUP_ID + " = ? ";
+
+    private static final String sGroupByGroupIdMemberIdSelection =
+            AppContract.GroupEntry.TABLE_NAME +
+                    "." + AppContract.GroupEntry.COLUMN_GROUP_ID + " = ? AND " +
+            AppContract.GroupEntry.TABLE_NAME +
+                    "." + AppContract.GroupEntry.COLUMN_MEMBER_ID + " = ? ";
 
     private static final String sBabySelection =
             AppContract.BabyEntry.TABLE_NAME +
@@ -390,6 +415,40 @@ public class AppProvider extends ContentProvider {
         );
     }
 
+
+    private Cursor getGroupByGroupId(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getGroupByGroupId uri - " + uri);
+        String groupId = AppContract.GroupEntry.getGroupIdFromUri(uri);
+        Log.v(LOG_TAG, "getGroupByGroupId userId - " + groupId);
+
+        return sGroupQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sGroupByGroupIdSelection,
+                new String[]{groupId},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getGroupByGroupIdMemberId(Uri uri, String[] projection, String sortOrder) {
+
+        Log.v(LOG_TAG, "getGroupByGroupIdMemberId uri - " + uri);
+        String groupId = AppContract.GroupEntry.getGroupIdFromUri(uri);
+        String memberId = AppContract.GroupEntry.getMemberIdFromUri(uri);
+        Log.v(LOG_TAG, "getGroupByGroupIdMemberId userId - " + groupId);
+        Log.v(LOG_TAG, "getGroupByGroupIdMemberId memberId - " + memberId);
+
+        return sGroupQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                sGroupByGroupIdMemberIdSelection,
+                new String[]{groupId,memberId},
+                null,
+                null,
+                sortOrder
+        );
+    }
 
     private Cursor getBabyByUserId(Uri uri, String[] projection, String sortOrder) {
 
@@ -745,29 +804,32 @@ public class AppProvider extends ContentProvider {
         matcher.addURI(authority, AppContract.PATH_USER_PREF, USER_PREF);
         matcher.addURI(authority, AppContract.PATH_USER_PREF + "/USER/*", USER_PREF_BY_USERID);
         matcher.addURI(authority, AppContract.PATH_SYNC_LOG, SYNC_LOG);
-        matcher.addURI(authority, AppContract.PATH_SYNC_LOG + "/USER/*", SYNC_LOG_BY_USER);
+        matcher.addURI(authority, AppContract.PATH_SYNC_LOG + "/USER/*", SYNC_LOG_BY_USERID);
+        matcher.addURI(authority, AppContract.PATH_GROUP, GROUP);
+        matcher.addURI(authority, AppContract.PATH_GROUP + "/GROUP/*", GROUP_BY_GROUPID);
+        matcher.addURI(authority, AppContract.PATH_GROUP + "/GROUP/*/MEMBER/*", GROUP_BY_GROUPID_MEMBERID);
         matcher.addURI(authority, AppContract.PATH_BABY, BABY);
         matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*", BABY_BY_USERID);
-        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*/BABY/*", BABY_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_BABY + "/USER/*/BABY/#", BABY_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_FEEDING, FEEDING);
         matcher.addURI(authority, AppContract.PATH_FEEDING + "/*", FEEDING_BY_ID);
-        matcher.addURI(authority, AppContract.PATH_FEEDING + "/USER/*/BABY/*", FEEDING_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_FEEDING + "/USER/*/BABY/#", FEEDING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_DIAPER, DIAPER);
         matcher.addURI(authority, AppContract.PATH_DIAPER + "/*", DIAPER_BY_ID);
-        matcher.addURI(authority, AppContract.PATH_DIAPER + "/USER/*/BABY/*", DIAPER_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_DIAPER + "/USER/*/BABY/#", DIAPER_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_SLEEPING, SLEEPING);
         matcher.addURI(authority, AppContract.PATH_SLEEPING + "/*", SLEEPING_BY_ID);
-        matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/*", SLEEPING_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_SLEEPING + "/USER/*/BABY/#", SLEEPING_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_HEALTH, HEALTH);
         matcher.addURI(authority, AppContract.PATH_HEALTH + "/*", HEALTH_BY_ID);
-        matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/*", HEALTH_BY_USERID_BABYID);
+        matcher.addURI(authority, AppContract.PATH_HEALTH + "/USER/*/BABY/#", HEALTH_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ACTIVITIES + "/USER/*/BABY/*/DATE/*", ACTIVITIES_BY_USERID_BABYID);
         matcher.addURI(authority, AppContract.PATH_ARTICLE, ARTICLE);
         matcher.addURI(authority, AppContract.PATH_ARTICLE + "/TYPE/*", ARTICLE_BY_TYPE);
         matcher.addURI(authority, AppContract.PATH_ARTICLE + "/CATEGORY/*", ARTICLE_BY_CATEGORY);
         matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL, ARTICLE_DETAIL);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/*", ARTICLE_DETAIL_BY_ARTICLEID);
-        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/DETAIL/*", ARTICLE_DETAIL_WITH_DETAIL_BY_ARTICLEID);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/#", ARTICLE_DETAIL_BY_ARTICLEID);
+        matcher.addURI(authority, AppContract.PATH_ARTICLE_DETAIL + "/ARTICLE/DETAIL/#", ARTICLE_DETAIL_WITH_DETAIL_BY_ARTICLEID);
         matcher.addURI(authority, AppContract.PATH_MEDIA, MEDIA);
         matcher.addURI(authority, AppContract.PATH_MEDIA + "/TYPE/*", MEDIA_BY_TYPE);
         matcher.addURI(authority, AppContract.PATH_MEDIA + "/CATEGORY/*", MEDIA_BY_CATEGORY);
@@ -799,8 +861,14 @@ public class AppProvider extends ContentProvider {
                 return AppContract.UserPreferenceEntry.CONTENT_ITEM_TYPE;
             case SYNC_LOG:
                 return AppContract.SyncLogEntry.CONTENT_TYPE;
-            case SYNC_LOG_BY_USER:
+            case SYNC_LOG_BY_USERID:
                 return AppContract.SyncLogEntry.CONTENT_ITEM_TYPE;
+            case GROUP:
+                return AppContract.GroupEntry.CONTENT_TYPE;
+            case GROUP_BY_GROUPID:
+                return AppContract.GroupEntry.CONTENT_ITEM_TYPE;
+            case GROUP_BY_GROUPID_MEMBERID:
+                return AppContract.GroupEntry.CONTENT_ITEM_TYPE;
             case BABY:
                 return AppContract.BabyEntry.CONTENT_TYPE;
             case BABY_BY_USERID:
@@ -881,8 +949,18 @@ public class AppProvider extends ContentProvider {
                     break;
                 }
 
-                case SYNC_LOG_BY_USER: {
+                case SYNC_LOG_BY_USERID: {
                     retCursor = getSyncLogByUserId(uri, projection, sortOrder);
+                    break;
+                }
+
+                case GROUP_BY_GROUPID: {
+                    retCursor = getGroupByGroupId(uri, projection, sortOrder);
+                    break;
+                }
+
+                case GROUP_BY_GROUPID_MEMBERID: {
+                    retCursor = getGroupByGroupIdMemberId(uri, projection, sortOrder);
                     break;
                 }
 
@@ -985,7 +1063,7 @@ public class AppProvider extends ContentProvider {
 
         String tableName = getTableById(sUriMatcher.match(uri));
         if(!tableName.equals("Others")){
-                long _id = db.insert(tableName, null, values);
+                long _id = db.insertWithOnConflict(tableName, null, values,SQLiteDatabase.CONFLICT_REPLACE);
                 if ( _id > 0 )
                     return getUriByTableId(sUriMatcher.match(uri), _id);
                 else
@@ -1076,6 +1154,8 @@ public class AppProvider extends ContentProvider {
                 return AppContract.UserPreferenceEntry.TABLE_NAME;
             case SYNC_LOG:
                 return AppContract.SyncLogEntry.TABLE_NAME;
+            case GROUP:
+                return AppContract.GroupEntry.TABLE_NAME;
             case BABY:
                 return AppContract.BabyEntry.TABLE_NAME;
             case FEEDING:
@@ -1105,6 +1185,8 @@ public class AppProvider extends ContentProvider {
                 return AppContract.UserPreferenceEntry.buildUserPreferenceUri(_id);
             case SYNC_LOG:
                 return AppContract.SyncLogEntry.buildSyncLogUri(_id);
+            case GROUP:
+                return AppContract.GroupEntry.buildGroupUri(_id);
             case BABY:
                 return AppContract.BabyEntry.buildBabyUri(_id);
             case FEEDING:

@@ -143,7 +143,7 @@ public class FeedingFragment extends Fragment {
 
         SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
         SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(FEEDING_ID != -1) {
@@ -153,7 +153,7 @@ public class FeedingFragment extends Fragment {
                 if(activityEntry.getCount() > 0){
                     Log.v(TAG,"got feeding entry");
                     activityEntry.moveToFirst();
-                    activityDate.setText(activityEntry.getString(COL_FEEDING_DATE));
+                    activityDate.setText(new Utilities(getActivity()).convDateDb2Disp(activityEntry.getString(COL_FEEDING_DATE)));
                     activityTime.setText(activityEntry.getString(COL_FEEDING_TIME));
                     activityNotes.setText(activityEntry.getString(COL_FEEDING_NOTES));
                     for(int iType = 0; iType < feedingType.getCount(); iType++){
@@ -172,6 +172,13 @@ public class FeedingFragment extends Fragment {
         return rootView;
     }
 
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle("Feeding - " + MainActivity.ACTIVE_BABY_NAME);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -240,7 +247,7 @@ public class FeedingFragment extends Fragment {
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.FeedingEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
         newValues.put(AppContract.FeedingEntry.COLUMN_BABY_ID, MainActivity.ACTIVE_BABY_ID);
-        newValues.put(AppContract.FeedingEntry.COLUMN_DATE, activityDate.getText().toString());
+        newValues.put(AppContract.FeedingEntry.COLUMN_DATE, new Utilities(getActivity()).convDateDisp2Db(activityDate.getText().toString()));
         newValues.put(AppContract.FeedingEntry.COLUMN_TIME, activityTime.getText().toString());
         newValues.put(AppContract.FeedingEntry.COLUMN_TYPE, feedingType.getSelectedItem().toString());
         newValues.put(AppContract.FeedingEntry.COLUMN_QUANTITY, feedingQuantity.getText().toString());

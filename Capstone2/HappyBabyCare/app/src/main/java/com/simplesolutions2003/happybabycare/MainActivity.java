@@ -21,25 +21,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.simplesolutions2003.happybabycare.sync.ArticleSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = MainActivity.class.getSimpleName();
     public static boolean USER_LOGGED_IN = false;
+    public static long LOGGED_IN_USER_ID_ID = -1;
     public static String LOGGED_IN_USER_ID = null;
+    public static String GROUP_ID = null;
     public static long ACTIVE_BABY_ID = -1;
+    public static String ACTIVE_BABY_NAME = null;
     public static boolean FRAGMENT_REQUIRES_BABY_ID = false;
     public static DrawerLayout drawer = null;
+    NavigationView navigationView;
     public static MenuItem babyProfilesMenuItem;
     public static MenuItem manageGroupMenuItem;
 
+    MenuItem itemPrev;
+    Toolbar toolbar;
     FragmentManager fragmentManager = getFragmentManager();
     static String prevFragmentTag = null;
     static String currFragmentTag = null;
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -69,12 +77,15 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         if(!USER_LOGGED_IN){
             handleFragments(new SignInFragment(),SignInFragment.TAG,SignInFragment.KEEP_IN_STACK);
         }
+
+        Log.v(TAG, "initializeSyncAdapter");
+        ArticleSyncAdapter.initializeSyncAdapter(this);
 
     }
 
@@ -98,6 +109,9 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "popping backstack " + fragmentManager.getBackStackEntryCount());
                 //fragmentManager.popBackStackImmediate(prevFragmentTag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 //Log.v(TAG, "popping backstack > " + fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1));
+                //currFragmentTag = prevFragmentTag;
+                //keepFragmentInStack = keepPrevFragmentInStack;
+                keepPrevFragmentInStack = true;
                 fragmentManager.popBackStack();
             } else {
                 Log.i(TAG, "nothing on backstack, calling super");
@@ -109,6 +123,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        menu.clear();
         getMenuInflater().inflate(R.menu.main, menu);
         babyProfilesMenuItem = (MenuItem)  menu.findItem(R.id.action_baby_profiles);
         manageGroupMenuItem = (MenuItem)  menu.findItem(R.id.action_manage_group);
@@ -131,15 +146,25 @@ public class MainActivity extends AppCompatActivity
             handleFragments(new BabyFragment(),BabyFragment.TAG,BabyFragment.KEEP_IN_STACK);
         }
         if (id == R.id.action_manage_group) {
-            handleFragments(new GroupManageFragment(),GroupManageFragment.TAG,GroupManageFragment.KEEP_IN_STACK);
+            if(GROUP_ID != null) {
+                handleFragments(new GroupManageFragment(), GroupManageFragment.TAG, GroupManageFragment.KEEP_IN_STACK);
+            }else{
+                handleFragments(new GroupFragment(), GroupFragment.TAG, GroupFragment.KEEP_IN_STACK);
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        if (itemPrev != null) {
+            itemPrev.setChecked(false);
+        }
+        item.setChecked(true);
+        itemPrev = item;
+
         final int id = item.getItemId();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -213,12 +238,21 @@ public class MainActivity extends AppCompatActivity
 
     public void handleFragments(Fragment fragment, String tag, boolean addToStack){
 
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        View v = getCurrentFocus();
+        if (v != null) {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+
         if(MainActivity.ACTIVE_BABY_ID == -1 & (tag.equals(ActivitiesFragment.TAG) |
                 tag.equals(FeedingFragment.TAG) |
                 tag.equals(DiaperFragment.TAG) |
                 tag.equals(SleepingFragment.TAG) |
                 tag.equals(HealthFragment.TAG))){
             fragment = null;
+            if (itemPrev != null) {
+                itemPrev.setChecked(false);
+            }
             Toast.makeText(this, "Please select a baby", Toast.LENGTH_LONG).show();
         }
 
@@ -243,52 +277,9 @@ public class MainActivity extends AppCompatActivity
             }
             prevFragmentTag = currFragmentTag;
             keepPrevFragmentInStack = keepFragmentInStack;
-            /*else {
 
-                Fragment fragmentToRemove;
-                fragmentToRemove = fragmentManager.findFragmentByTag(prevFragmentTag);
-                int iFragment;
-                if(fragmentManager.getBackStackEntryCount() > 0) {
-                    for (iFragment = 0; iFragment < fragmentManager.getBackStackEntryCount(); iFragment++) {
-                        if (fragmentManager.getBackStackEntryAt(iFragment).equals(currFragmentTag)) {
-
-                        }
-                    }
-                }
-                if (fragmentToRemove != null) {
-                    if(keepPrevFragmentInStack) {
-                        fragmentManager.beginTransaction()
-                                .remove(fragmentToRemove)
-                                //.addToBackStack(prevFragmentTag)
-                                .commit();
-                        //fragmentManager.popBackStack();
-                    }else{
-                        fragmentManager.beginTransaction()
-                                .remove(fragmentToRemove)
-                                .commit();
-                    }
-                }
-
-                fragmentToRemove = fragmentManager.findFragmentByTag(currFragmentTag);
-                if (fragmentToRemove != null) {
-                    fragmentManager.beginTransaction()
-                            .remove(fragmentToRemove)
-                            .commit();
-                }
-
-                if(keepFragmentInStack) {
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frame_container, fragment, currFragmentTag)
-                            .addToBackStack(currFragmentTag)
-                            .commit();
-                }else{
-                    fragmentManager.beginTransaction()
-                            .add(R.id.frame_container, fragment, currFragmentTag)
-                            .commit();
-                }
-            }
             //setTitle(navMenuTitles[position]);
-            */
+
         }
         Log.v(TAG,"handleFragments - " + fragmentManager.getBackStackEntryCount());
     }
@@ -296,6 +287,16 @@ public class MainActivity extends AppCompatActivity
     public void handleFragments(boolean goBack){
         if(goBack) {
             onBackPressed();
+        }
+    }
+
+    public void updateToolbarTitle(String title){
+        if(toolbar != null) {
+            if (title == null) {
+                getSupportActionBar().setTitle(getString(R.string.app_name));
+            } else {
+                getSupportActionBar().setTitle(title);
+            }
         }
     }
 }

@@ -2,6 +2,12 @@
     <string name="app_name">Happy Baby Care</string>
     <string name="banner_ad_unit_id">ca-app-pub-1979618719371623/6491972002</string>
     <string name="ad_device_id">1D3D2254E4F4E858E1A2552829E2063B</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">happybabycare.simplesolutions2003.com</string>
+    <string name="content_authority">com.simplesolutions2003.happybabycare</string>
+
+    <!-- navigation -->
     <string name="nav_baby_care_category">Baby Care</string>
     <string name="nav_baby_care_activities">Activities</string>
     <string name="nav_baby_care_feeding">Feeding</string>
@@ -22,7 +28,7 @@
     <string name="action_save">Save</string>
     <string name="action_add">Add</string>
     <string name="action_delete">Delete</string>
-
+    <string name="text_welcome">Welcome to Happy Baby Care App!</string>
     <string name="text_sign_in">Sign in with your google account to continue</string>
     <string name="text_date">Date</string>
     <string name="text_time">Time</string>
@@ -47,7 +53,7 @@
     <string name="text_feeding_date">Date</string>
     <string name="text_feeding_time">Time</string>
     <string name="text_feeding_type">What food?</string>
-    <string name="text_feeding_qty">Quantity</string>
+    <string name="text_feeding_qty">Quantity/Duration</string>
     <string name="text_feeding_notes">Notes</string>
 
     <string-array name="spinner_feeding_type">
@@ -101,6 +107,10 @@
     <string name="btn_sounds_pause">Pause</string>
     <string name="btn_sounds_stop">Stop</string>
     <string name="btn_sounds_repeat">Repeat</string>
+
+    <string name="text_rattle_01">Rattle 1</string>
+    <string name="text_rattle_02">Rattle 2</string>
+    <string name="text_white_noise_01">White Noise</string>
 
 </resources>
 

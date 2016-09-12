@@ -53,6 +53,12 @@ public class ArticlesFragment extends Fragment implements LoaderManager.LoaderCa
     public ArticlesFragment(){}
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -66,6 +72,17 @@ public class ArticlesFragment extends Fragment implements LoaderManager.LoaderCa
     public void onResume()
     {
         super.onResume();
+        switch(ARTICLE_TYPE){
+            case "stories":
+                ((MainActivity) getActivity()).updateToolbarTitle("Stories");
+                break;
+            case "rhymes":
+                ((MainActivity) getActivity()).updateToolbarTitle("Rhymes");
+                break;
+            default:
+                break;
+        }
+        ArticleDetailFragment.ARTICLE_TITLE = "";
         getLoaderManager().initLoader(ARTICLES_LOADER, null, this);
     }
 

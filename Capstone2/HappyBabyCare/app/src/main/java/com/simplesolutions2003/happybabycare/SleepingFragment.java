@@ -158,7 +158,7 @@ public class SleepingFragment extends Fragment {
 
         SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
         SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(SLEEPING_ID != -1) {
@@ -168,7 +168,7 @@ public class SleepingFragment extends Fragment {
                 if(activityEntry.getCount() > 0){
                     Log.v(TAG,"got sleep entry");
                     activityEntry.moveToFirst();
-                    activityDate.setText(activityEntry.getString(COL_SLEEPING_DATE));
+                    activityDate.setText(new Utilities(getActivity()).convDateDb2Disp(activityEntry.getString(COL_SLEEPING_DATE)));
                     activityTime.setText(activityEntry.getString(COL_SLEEPING_TIME));
                     activityNotes.setText(activityEntry.getString(COL_SLEEPING_NOTES));
                     sleepingDuration.setText(activityEntry.getString(COL_SLEEPING_DURATION));
@@ -187,6 +187,12 @@ public class SleepingFragment extends Fragment {
     }
 
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle("Sleeping - " + MainActivity.ACTIVE_BABY_NAME);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -255,7 +261,7 @@ public class SleepingFragment extends Fragment {
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.SleepingEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
         newValues.put(AppContract.SleepingEntry.COLUMN_BABY_ID, MainActivity.ACTIVE_BABY_ID);
-        newValues.put(AppContract.SleepingEntry.COLUMN_DATE, activityDate.getText().toString());
+        newValues.put(AppContract.SleepingEntry.COLUMN_DATE, new Utilities(getActivity()).convDateDisp2Db(activityDate.getText().toString()));
         newValues.put(AppContract.SleepingEntry.COLUMN_TIME, activityTime.getText().toString());
         newValues.put(AppContract.SleepingEntry.COLUMN_DURATION, sleepingDuration.getText().toString());
         newValues.put(AppContract.SleepingEntry.COLUMN_WHERE_SLEEP, sleepingWhere.getSelectedItem().toString());

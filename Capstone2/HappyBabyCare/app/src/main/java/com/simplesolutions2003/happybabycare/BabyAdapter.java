@@ -2,7 +2,10 @@ package com.simplesolutions2003.happybabycare;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Created by SuriyaKumar on 8/30/2016.
@@ -70,33 +77,43 @@ public class BabyAdapter extends CursorAdapter implements View.OnClickListener {
                 babyProfilePhotoUri = null;
             }
             Log.v(TAG, "babyProfilePhotoUri - " + babyProfilePhotoUri);
-            Picasso.Builder builder = new Picasso.Builder(context);
-            builder.listener(new Picasso.Listener()
-            {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e)
-                {
-                    e.printStackTrace();
-                }
-            });
 
-            builder.build()
-                    .load(babyProfilePhotoUri)
-                    .transform(new BitmapTransform((int) context.getResources().getDimension(R.dimen.profile_photo_width),(int) context.getResources().getDimension(R.dimen.profile_photo_height)))
-                    .resize((int)context.getResources().getDimension(R.dimen.profile_photo_width),(int)context.getResources().getDimension(R.dimen.profile_photo_height))
-                    .placeholder(R.drawable.logo)
-                    .error(R.drawable.logo)
-                    .skipMemoryCache()
-                    .centerCrop()
-                    .into(viewHolder.babyProfilePhoto);
+            if(babyProfilePhotoUri != null) {
+
+                ParcelFileDescriptor parcelFD = null;
+                try {
+                    parcelFD = context.getContentResolver().openFileDescriptor(babyProfilePhotoUri, "r");
+                    FileDescriptor imageSource = parcelFD.getFileDescriptor();
+
+                    viewHolder.babyProfilePhoto.setImageBitmap(BitmapFactory.decodeFileDescriptor(imageSource, null, null));
+                }catch (FileNotFoundException e){
+                    Log.e(TAG,e.getMessage());
+                }finally {
+                    if (parcelFD != null)
+                        try {
+                            parcelFD.close();
+                        } catch (IOException e) {
+                            Log.e(TAG,e.getMessage());
+                        }
+                }
+            }else{
+                viewHolder.babyProfilePhoto.setImageDrawable(context.getDrawable(R.drawable.logo));
+            }
             viewHolder.babyName.setText(cursor.getString(BabyFragment.COL_BABY_NAME));
             viewHolder.babyBirthDate.setText(cursor.getString(BabyFragment.COL_BABY_BIRTH_DATE));
             viewHolder.babyGender.setText(cursor.getString(BabyFragment.COL_BABY_GENDER));
 
-            viewHolder.babySelect.setTag(new String[]{Long.toString(cursor.getLong(BabyFragment.COL_BABY_ID))});
+            viewHolder.babySelect.setTag(new String[]{Long.toString(cursor.getLong(BabyFragment.COL_BABY_ID)),
+                    cursor.getString(BabyFragment.COL_BABY_NAME)});
             viewHolder.babySelect.setOnClickListener(this);
+            if(cursor.getLong(BabyFragment.COL_BABY_ID) == MainActivity.ACTIVE_BABY_ID){
+                viewHolder.babySelect.setImageDrawable(context.getDrawable(R.drawable.select_icon_active));
+            }else{
+                viewHolder.babySelect.setImageDrawable(context.getDrawable(R.drawable.select_icon_default));
+            }
 
-            viewHolder.babyEdit.setTag(new String[]{Long.toString(cursor.getLong(BabyFragment.COL_BABY_ID))});
+            viewHolder.babyEdit.setTag(new String[]{Long.toString(cursor.getLong(BabyFragment.COL_BABY_ID)),
+                    cursor.getString(BabyFragment.COL_BABY_NAME)});
             viewHolder.babyEdit.setOnClickListener(this);
         }
 
@@ -107,10 +124,12 @@ public class BabyAdapter extends CursorAdapter implements View.OnClickListener {
         Log.v(TAG, "onClick" + v.getTag());
         String[] params = (String[]) v.getTag();
         Long babyId = Long.parseLong(params[0]);
+        String babyName = params[1];
 
         switch(v.getId()) {
             case R.id.baby_select:
                 MainActivity.ACTIVE_BABY_ID = babyId;
+                MainActivity.ACTIVE_BABY_NAME = babyName;
                 ((MainActivity) context).handleFragments(new ActivitiesFragment(), ActivitiesFragment.TAG, ActivitiesFragment.KEEP_IN_STACK);
                 break;
             case R.id.baby_edit:

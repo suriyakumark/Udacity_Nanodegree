@@ -8,16 +8,19 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
@@ -212,7 +215,6 @@ public class BabyProfileFragment extends Fragment {
         return rootView;
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.save_delete, menu);
@@ -291,25 +293,27 @@ public class BabyProfileFragment extends Fragment {
 
     public void setBabyProfilePhoto(){
         Log.v(TAG,"setBabyProfilePhoto - " + babyProfilePhotoUri.toString());
-        Picasso.Builder builder = new Picasso.Builder(getActivity());
-        builder.listener(new Picasso.Listener()
-        {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e)
-            {
-                babyProfilePhotoUri = null;
-                e.printStackTrace();
+
+        if(babyProfilePhotoUri != null) {
+            ParcelFileDescriptor parcelFD = null;
+            try {
+                parcelFD = getActivity().getContentResolver().openFileDescriptor(babyProfilePhotoUri, "r");
+                FileDescriptor imageSource = parcelFD.getFileDescriptor();
+
+                babyProfilePhoto.setImageBitmap(BitmapFactory.decodeFileDescriptor(imageSource, null, null));
+            }catch (FileNotFoundException e){
+                Log.e(TAG,e.getMessage());
+            }finally {
+                if (parcelFD != null)
+                    try {
+                        parcelFD.close();
+                    } catch (IOException e) {
+                        Log.e(TAG,e.getMessage());
+                    }
             }
-        });
-        builder.build()
-                .load(babyProfilePhotoUri)
-                .transform(new BitmapTransform((int) getResources().getDimension(R.dimen.profile_photo_width),(int) getResources().getDimension(R.dimen.profile_photo_height)))
-                .resize((int)getResources().getDimension(R.dimen.profile_photo_width),(int)getResources().getDimension(R.dimen.profile_photo_height))
-                .placeholder(R.drawable.logo)
-                .error(R.drawable.logo)
-                .skipMemoryCache()
-                .centerCrop()
-                .into(babyProfilePhoto);
+        }else{
+            babyProfilePhoto.setImageDrawable(getActivity().getDrawable(R.drawable.logo));
+        }
     }
 
     public void actionSave(){

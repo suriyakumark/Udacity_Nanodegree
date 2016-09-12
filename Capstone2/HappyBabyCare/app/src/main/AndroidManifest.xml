@@ -31,7 +31,43 @@
             android:theme="@android:style/Theme.Translucent" />
         <provider
             android:authorities="com.simplesolutions2003.happybabycare"
-            android:name=".data.AppProvider" />
+            android:name=".data.AppProvider"
+            android:exported="true" />
+        <!-- The SyncAdapter service -->
+        <service
+            android:name=".sync.ArticleSyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+        <!-- SyncAdapter's dummy authentication service -->
+        <service android:name=".sync.AppAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <receiver android:name=".widget.ActivitiesWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.ActivitiesWidgetRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <meta-data
             android:name="com.google.android.gms.version"

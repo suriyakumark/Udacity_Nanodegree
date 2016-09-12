@@ -28,6 +28,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -38,6 +39,10 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
     public final static boolean KEEP_IN_STACK = false;
     public final static String TAG = SignInFragment.class.getSimpleName();
     public final static int RC_SIGN_IN = 100;
+
+    public final static int ACTIVE = 1;
+    public final static int INACTIVE = 0;
+
     public static boolean ACTION_SIGN_OUT = false;
     public static boolean ACTION_SIGN_SILENT = false;
     SignInButton signInButton;
@@ -45,8 +50,14 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
 
 
     private static final String[] USER_COLUMNS = {
-        AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry.COLUMN_USER_ID
+            AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry._ID,
+            AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry.COLUMN_USER_ID,
+            AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry.COLUMN_GROUP_ID
     };
+
+    private static final int COL_ID = 0;
+    private static final int COL_USER_ID = 1;
+    private static final int COL_GROUP_ID = 2;
 
     public SignInFragment(){}
     GoogleApiClient mGoogleApiClient;
@@ -71,6 +82,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
         });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope("https://www.googleapis.com/auth/userinfo.email"))
                 .requestEmail()
                 .build();
 
@@ -132,9 +144,42 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                         signInButton.setEnabled(true);
                         ActivityCompat.invalidateOptionsMenu(getActivity());
                         ACTION_SIGN_OUT = false;
+                        updateActiveUser(-1);
                     }
                 });
     }
+
+    public void offlineSignIn(){
+        Log.v(TAG,"offlineSignIn method");
+        mSignInProgress = true;
+        signInButton.setEnabled(false);
+
+        Uri query_user_uri = AppContract.UserEntry.CONTENT_URI;
+        String sSelection = AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry.COLUMN_ACTIVE + " = ? ";
+        String[] sSelectionArgs = new String[]{Long.toString(ACTIVE)};
+        Cursor userCursor = getActivity().getContentResolver().query(query_user_uri,USER_COLUMNS,sSelection,sSelectionArgs,null);
+
+        if(userCursor!=null) {
+            if (userCursor.getCount() == 1) {
+                userCursor.moveToFirst();
+                MainActivity.LOGGED_IN_USER_ID_ID = userCursor.getLong(COL_ID);
+                MainActivity.LOGGED_IN_USER_ID = userCursor.getString(COL_USER_ID);
+                MainActivity.GROUP_ID = userCursor.getString(COL_GROUP_ID);
+                MainActivity.USER_LOGGED_IN = true;
+                Log.v(TAG, "offlineSignIn - active user found");
+            }
+        }
+
+        mSignInProgress = false;
+        if(!MainActivity.USER_LOGGED_IN) {
+            signInButton.setEnabled(true);
+        }else{
+            ActivityCompat.invalidateOptionsMenu(getActivity());
+            ((MainActivity) getActivity()).handleFragments(new BabyFragment(), BabyFragment.TAG, BabyFragment.KEEP_IN_STACK);
+        }
+
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -160,17 +205,27 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                 MainActivity.LOGGED_IN_USER_ID = acct.getEmail();
                 Log.d(TAG, "GoogleSignInAccount:" + MainActivity.LOGGED_IN_USER_ID);
                 checkAndCreateNewUser();
-                ((MainActivity) getActivity()).handleFragments(new BabyFragment(),BabyFragment.TAG,BabyFragment.KEEP_IN_STACK);
+                if(MainActivity.GROUP_ID == null){
+                    ((MainActivity) getActivity()).handleFragments(new GroupFragment(), GroupFragment.TAG, GroupFragment.KEEP_IN_STACK);
+                }else {
+                    ((MainActivity) getActivity()).handleFragments(new BabyFragment(), BabyFragment.TAG, BabyFragment.KEEP_IN_STACK);
+                }
             }else{
                 Toast.makeText(getActivity(), "Could not get email Id.", Toast.LENGTH_LONG).show();
             }
 
         } else {
-            signInButton.setEnabled(true);
-            MainActivity.USER_LOGGED_IN = false;
-            ActivityCompat.invalidateOptionsMenu(getActivity());
-            if(!ACTION_SIGN_SILENT) {
-                Toast.makeText(getActivity(), "Sign In not successful", Toast.LENGTH_LONG).show();
+
+            if(!new Utilities(getActivity()).isInternetOn() & ACTION_SIGN_SILENT) {
+                offlineSignIn();
+            }
+            if(!MainActivity.USER_LOGGED_IN) {
+                signInButton.setEnabled(true);
+                MainActivity.USER_LOGGED_IN = false;
+                ActivityCompat.invalidateOptionsMenu(getActivity());
+                if (!ACTION_SIGN_SILENT) {
+                    Toast.makeText(getActivity(), "Sign In not successful", Toast.LENGTH_LONG).show();
+                }
             }
         }
         mSignInProgress = false;
@@ -242,7 +297,11 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                 //new user, so insert email to database
                 createNewUser();
             } else {
+                userCursor.moveToFirst();
+                MainActivity.LOGGED_IN_USER_ID_ID = userCursor.getLong(COL_ID);
+                MainActivity.GROUP_ID = userCursor.getString(COL_GROUP_ID);
                 Log.v(TAG, "checkAndCreateNewUser - user exists");
+                updateActiveUser(MainActivity.LOGGED_IN_USER_ID_ID);
                 //start initial sync
             }
         }else{
@@ -255,6 +314,31 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
         Uri insert_user_uri = AppContract.UserEntry.CONTENT_URI;
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.UserEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
-        getActivity().getContentResolver().insert(insert_user_uri, newValues);
+        newValues.put(AppContract.UserEntry.COLUMN_ACTIVE, Integer.toString(ACTIVE));
+        Uri resultInsert = getActivity().getContentResolver().insert(insert_user_uri, newValues);
+        if(resultInsert != null) {
+            MainActivity.LOGGED_IN_USER_ID_ID = AppContract.UserEntry.getIdFromUri(resultInsert);
+            updateActiveUser(MainActivity.LOGGED_IN_USER_ID_ID);
+        }
     }
+
+    public void updateActiveUser(long _id){
+        Log.v(TAG, "updateActiveUser - " + _id);
+        Uri update_user_uri = AppContract.UserEntry.CONTENT_URI;
+
+        ContentValues newValues1 = new ContentValues();
+        newValues1.put(AppContract.UserEntry.COLUMN_ACTIVE, Integer.toString(INACTIVE));
+        getActivity().getContentResolver().update(update_user_uri, newValues1, null, null);
+
+        if(_id != -1) {
+            ContentValues newValues2 = new ContentValues();
+            newValues2.put(AppContract.UserEntry.COLUMN_ACTIVE, Integer.toString(ACTIVE));
+            String sSelection = AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry._ID + " = ? ";
+            String[] sSelectionArgs = new String[]{Long.toString(_id)};
+            getActivity().getContentResolver().update(update_user_uri, newValues2, sSelection, sSelectionArgs);
+        }
+
+    }
+
+
 }

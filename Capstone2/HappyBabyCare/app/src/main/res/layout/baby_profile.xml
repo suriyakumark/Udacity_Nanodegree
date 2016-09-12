@@ -10,7 +10,8 @@
 		android:layout_gravity="center_horizontal"
         android:layout_width="@dimen/profile_photo_width"
         android:layout_height="@dimen/profile_photo_height"
-		android:scaleType="fitCenter"
+		android:scaleType="centerCrop"
+		android:adjustViewBounds="true"
 		android:src="@drawable/logo"
 		android:padding="8dp"/>
 

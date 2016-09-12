@@ -106,7 +106,7 @@ public class DiaperFragment extends Fragment {
 
         activityDate.setInputType(InputType.TYPE_NULL);
         activityTime.setInputType(InputType.TYPE_NULL);
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         setDiaperType(0);
@@ -189,7 +189,7 @@ public class DiaperFragment extends Fragment {
                 if(activityEntry.getCount() > 0){
                     Log.v(TAG,"got diaper entry");
                     activityEntry.moveToFirst();
-                    activityDate.setText(activityEntry.getString(COL_DIAPER_DATE));
+                    activityDate.setText(new Utilities(getActivity()).convDateDb2Disp(activityEntry.getString(COL_DIAPER_DATE)));
                     activityTime.setText(activityEntry.getString(COL_DIAPER_TIME));
                     setDiaperType(getDiaperTypeId(activityEntry.getString(COL_DIAPER_TYPE)));
                     activityNotes.setText(activityEntry.getString(COL_DIAPER_NOTES));
@@ -199,6 +199,13 @@ public class DiaperFragment extends Fragment {
             }
         }
         return rootView;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle("Diaper - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
 
@@ -268,7 +275,7 @@ public class DiaperFragment extends Fragment {
         ContentValues newValues = new ContentValues();
         newValues.put(AppContract.DiaperEntry.COLUMN_USER_ID, MainActivity.LOGGED_IN_USER_ID);
         newValues.put(AppContract.DiaperEntry.COLUMN_BABY_ID, MainActivity.ACTIVE_BABY_ID);
-        newValues.put(AppContract.DiaperEntry.COLUMN_DATE, activityDate.getText().toString());
+        newValues.put(AppContract.DiaperEntry.COLUMN_DATE, new Utilities(getActivity()).convDateDisp2Db(activityDate.getText().toString()));
         newValues.put(AppContract.DiaperEntry.COLUMN_TIME, activityTime.getText().toString());
         newValues.put(AppContract.DiaperEntry.COLUMN_TYPE, getDiaperTypeName(diaperType));
         newValues.put(AppContract.DiaperEntry.COLUMN_CREAM, "");

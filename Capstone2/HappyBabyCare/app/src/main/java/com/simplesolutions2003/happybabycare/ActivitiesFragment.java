@@ -32,6 +32,7 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     public final static String TAG = ActivitiesFragment.class.getSimpleName();
 
     private final static int ACTIVITIES_LOADER = 0;
+    private static String ACTIVITIES_DATE = "";
     private int dPosition;
     private ActivitiesAdapter activitiesListAdapter;
     ListView activitiesListView;
@@ -58,6 +59,11 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     static final int COL_ACTIVITY_SUMMARY = 6;
     static final int COL_ACTIVITY_DETAIL = 7;
 
+
+    private static final String ACTIVITY_SORT =
+            AppContract.ActivitiesEntry.COLUMN_TIME + " ASC, " +
+                    AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE + " ASC ";
+
     public interface Callback {
     }
 
@@ -75,13 +81,17 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
         activitiesListView.setAdapter(activitiesListAdapter);
 
         activityFilterDate.setInputType(InputType.TYPE_NULL);
-        activityFilterDate.setText(new Utilities(getActivity()).getCurrentDateDB());
+        if(ACTIVITIES_DATE.isEmpty()){
+            ACTIVITIES_DATE = new Utilities(getActivity()).getCurrentDateDisp();
+        }
+        activityFilterDate.setText(ACTIVITIES_DATE);
 
         activityFilterDate.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityFilterDate);
+                ACTIVITIES_DATE = activityFilterDate.getText().toString();
                 refreshData();
             }
 
@@ -139,6 +149,7 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     public void onResume()
     {
         super.onResume();
+        ((MainActivity) getActivity()).updateToolbarTitle(MainActivity.ACTIVE_BABY_NAME);
         getLoaderManager().initLoader(ACTIVITIES_LOADER, null, this);
     }
 
@@ -147,14 +158,15 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.v(TAG, "onCreateLoader - " + i + " loader");
 
-        Uri buildActivitiesUri = AppContract.ActivitiesEntry.buildActivitiesByUserIdBabyIdUri(MainActivity.LOGGED_IN_USER_ID,MainActivity.ACTIVE_BABY_ID,activityFilterDate.getText().toString());
+        Uri buildActivitiesUri = AppContract.ActivitiesEntry.buildActivitiesByUserIdBabyIdUri(MainActivity.LOGGED_IN_USER_ID,MainActivity.ACTIVE_BABY_ID,
+                new Utilities(getActivity()).convDateDisp2Db(activityFilterDate.getText().toString()));
 
         return new CursorLoader(getActivity(),
                 buildActivitiesUri,
                 ACTIVITY_COLUMNS,
                 null,
                 null,
-                null);
+                ACTIVITY_SORT);
 
     }
 
@@ -162,12 +174,11 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.v(TAG, "onLoadFinished - " + loader.getId() + " loader - " + cursor.getCount() + " rows retrieved");
+        activitiesListAdapter.swapCursor(null);
         if(cursor != null){
             if (cursor.getCount() > 0) {
                 activitiesListAdapter.swapCursor(cursor);
             }
-        }else{
-            activitiesListAdapter.swapCursor(null);
         }
 
         //scroll to top, after listview are loaded it focuses on listview

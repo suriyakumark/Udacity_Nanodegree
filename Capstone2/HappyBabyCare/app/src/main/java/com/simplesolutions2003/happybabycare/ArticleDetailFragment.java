@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -26,6 +27,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     private int dPosition;
     private ArticleDetailAdapter articleDetailListAdapter;
     public static long ARTICLE_ID = -1;
+    public static String ARTICLE_TITLE = "";
     ListView articleDetailListView;
 
     private static final String[] ARTICLE_COLUMNS = {
@@ -92,6 +94,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
         Log.v(TAG, "onLoadFinished - " + loader.getId() + " loader - " + cursor.getCount() + " rows retrieved");
         if(cursor != null){
             if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
                 articleDetailListAdapter.swapCursor(cursor);
             }
         }

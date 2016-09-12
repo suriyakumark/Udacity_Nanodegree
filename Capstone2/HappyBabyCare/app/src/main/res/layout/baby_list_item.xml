@@ -11,6 +11,7 @@
         android:layout_width="@dimen/profile_photo_width"
         android:layout_height="@dimen/profile_photo_height"
         android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:gravity="start"
         android:id="@+id/baby_prof_image" />
     <View android:layout_width="0dp"
@@ -53,7 +54,7 @@
         android:adjustViewBounds="true"
         android:padding="@dimen/padding_btn"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_launch_black_24dp"
+        android:src="@drawable/select_icon_default"
         android:id="@+id/baby_select" />
 
     <ImageButton

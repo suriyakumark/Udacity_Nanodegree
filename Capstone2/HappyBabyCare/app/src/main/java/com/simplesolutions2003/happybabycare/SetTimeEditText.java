@@ -27,7 +27,7 @@ public class SetTimeEditText implements View.OnFocusChangeListener, TimePickerDi
 
     @Override
     public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute)     {
-        editText.setText(selectedHour + ":" + selectedMinute);
+        editText.setText(String.format("%02d", selectedHour) + ":" + String.format("%02d", selectedMinute));
     }
 
     @Override

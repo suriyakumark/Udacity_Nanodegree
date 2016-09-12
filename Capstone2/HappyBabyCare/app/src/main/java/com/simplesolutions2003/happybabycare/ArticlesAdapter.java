@@ -11,9 +11,11 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by SuriyaKumar on 9/5/2016.
@@ -24,13 +26,13 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
     private Context context;
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public DynamicHeightNetworkImageView thumbnailView;
+        public ImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
 
         public ViewHolder(View view) {
             super(view);
-            thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.article_thumbnail);
+            thumbnailView = (ImageView) view.findViewById(R.id.article_thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }
@@ -67,9 +69,10 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         mCursor.moveToPosition(position);
         holder.titleView.setText(mCursor.getString(ArticlesFragment.COL_ARTICLE_TITLE));
         holder.subtitleView.setText(mCursor.getString(ArticlesFragment.COL_ARTICLE_CATEGORY));
-        holder.thumbnailView.setImageUrl(
-                mCursor.getString(ArticlesFragment.COL_ARTICLE_COVER_PIC),
-                ImageLoaderHelper.getInstance(context).getImageLoader());
+        Picasso.with(context)
+                .load(mCursor.getString(ArticlesFragment.COL_ARTICLE_COVER_PIC))
+                .noFade()
+                .into(holder.thumbnailView);
 
         //add logic for accessibility
         holder.titleView.setContentDescription(holder.titleView.getText());

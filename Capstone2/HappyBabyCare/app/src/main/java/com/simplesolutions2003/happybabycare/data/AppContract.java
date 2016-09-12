@@ -17,6 +17,7 @@ public class AppContract {
     public static final String PATH_USER = "user";
     public static final String PATH_USER_PREF = "user_preference";
     public static final String PATH_SYNC_LOG = "sync_log";
+    public static final String PATH_GROUP = "group";
     public static final String PATH_BABY = "baby";
     public static final String PATH_FEEDING = "feeding";
     public static final String PATH_DIAPER = "diaper";
@@ -82,6 +83,7 @@ public class AppContract {
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_PASSWORD = "password";
         public static final String COLUMN_ACTIVE = "active";
+        public static final String COLUMN_GROUP_ID = "group_id";
         public static final String COLUMN_LAST_SYNC_TS = "last_sync_timestamp";
 
         public static Uri buildUserUri(long _id) {
@@ -172,6 +174,53 @@ public class AppContract {
         public static String getUserIdFromUri(Uri uri) {
             if(uri.getPathSegments().get(1).equals("USER")) {
                 return uri.getPathSegments().get(2);
+            }
+            return null;
+        }
+    }
+
+
+    public static final class GroupEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_GROUP).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_GROUP;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_GROUP;
+
+        public static final String TABLE_NAME = "group_manage";
+        public static final String _ID = "_id";
+        public static final String COLUMN_GROUP_ID = "group_id";
+        public static final String COLUMN_MEMBER_ID = "member_id";
+
+        public static Uri buildGroupUri(long _id) {
+            return ContentUris.withAppendedId(CONTENT_URI, _id);
+        }
+
+        public static Uri buildGroupByGroupIdUri(String groupId) {
+            return CONTENT_URI.buildUpon().appendPath("GROUP").appendPath(groupId).build();
+        }
+
+        public static Uri buildGroupByGroupIdMemberIdUri(String groupId, String memberId) {
+            return CONTENT_URI.buildUpon().appendPath("GROUP").appendPath(groupId).appendPath("MEMBER").appendPath(memberId).build();
+        }
+
+        public static long getIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
+
+        public static String getGroupIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(1).equals("GROUP")) {
+                return uri.getPathSegments().get(2);
+            }
+            return null;
+        }
+
+        public static String getMemberIdFromUri(Uri uri) {
+            if(uri.getPathSegments().get(3).equals("MEMBER")) {
+                return uri.getPathSegments().get(4);
             }
             return null;
         }
@@ -464,6 +513,8 @@ public class AppContract {
         public static String getActivityDateFromUri(Uri uri) {
             if(uri.getPathSegments().get(5).equals("DATE")) {
                 return uri.getPathSegments().get(6);
+            }else if(uri.getPathSegments().get(3).equals("DATE")) {
+                return uri.getPathSegments().get(4);
             }
             return null;
         }
