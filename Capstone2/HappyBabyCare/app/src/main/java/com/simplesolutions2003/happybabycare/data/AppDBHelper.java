@@ -44,7 +44,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 SettingsEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
                 SettingsEntry.COLUMN_VALUE + " TEXT, " +
                 SettingsEntry.COLUMN_ACTIVE + " INTEGER, " +
-                SettingsEntry.COLUMN_UPDATED_TS + " TIMESTAMP, " +
+                SettingsEntry.COLUMN_UPDATED_TS + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
 
                 " UNIQUE (" + SettingsEntry._ID + ") ON CONFLICT REPLACE," +
 
@@ -57,7 +57,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 UserEntry.COLUMN_PASSWORD + " TEXT, " +
                 UserEntry.COLUMN_GROUP_ID + " TEXT, " +
                 UserEntry.COLUMN_ACTIVE + " INTEGER, " +
-                UserEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
+                UserEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
 
                 " UNIQUE (" + UserEntry._ID + ") ON CONFLICT REPLACE," +
 
@@ -81,7 +81,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 SyncLogEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 SyncLogEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 SyncLogEntry.COLUMN_TABLE_NAME + " TEXT NOT NULL, " +
-                SyncLogEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP, " +
+                SyncLogEntry.COLUMN_LAST_SYNC_TS + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
 
                 " UNIQUE (" + SyncLogEntry._ID + ") ON CONFLICT REPLACE," +
 
@@ -127,7 +127,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 FeedingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 FeedingEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 FeedingEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
-                FeedingEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
+                FeedingEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                 FeedingEntry.COLUMN_DATE + " DATE, " +
                 FeedingEntry.COLUMN_TIME + " TIME, " +
                 FeedingEntry.COLUMN_TYPE + " TEXT, " +
@@ -151,7 +151,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 DiaperEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 DiaperEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 DiaperEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
-                DiaperEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
+                DiaperEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                 DiaperEntry.COLUMN_DATE + " DATE, " +
                 DiaperEntry.COLUMN_TIME + " TIME, " +
                 DiaperEntry.COLUMN_TYPE + " TEXT, " +
@@ -174,7 +174,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 SleepingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 SleepingEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 SleepingEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
-                SleepingEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
+                SleepingEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                 SleepingEntry.COLUMN_DATE + " DATE, " +
                 SleepingEntry.COLUMN_TIME + " TIME, " +
                 SleepingEntry.COLUMN_DURATION + " INTEGER, " +
@@ -197,7 +197,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 HealthEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 HealthEntry.COLUMN_USER_ID + " TEXT NOT NULL," +
                 HealthEntry.COLUMN_BABY_ID + " INTEGER NOT NULL, " +
-                HealthEntry.COLUMN_TIMESTAMP + " TIMESTAMP, " +
+                HealthEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                 HealthEntry.COLUMN_DATE + " DATE, " +
                 HealthEntry.COLUMN_TIME + " TIME, " +
                 HealthEntry.COLUMN_TYPE + " TEXT, " +
@@ -222,7 +222,7 @@ public class AppDBHelper extends SQLiteOpenHelper  {
                 ArticleEntry.COLUMN_CATEGORY + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 ArticleEntry.COLUMN_COVER_PIC + " TEXT, " +
-                ArticleEntry.COLUMN_LAST_UPDATED_TS + " TIMESTAMP," +
+                ArticleEntry.COLUMN_LAST_UPDATED_TS + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
 
                 " UNIQUE (" + ArticleEntry._ID + ") ON CONFLICT REPLACE);";
 

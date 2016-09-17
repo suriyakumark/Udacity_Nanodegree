@@ -1,12 +1,12 @@
 package com.simplesolutions2003.happybabycare;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -37,6 +38,12 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     private ActivitiesAdapter activitiesListAdapter;
     ListView activitiesListView;
     EditText activityFilterDate;
+    TextView tvEmptyLoading;
+
+    public static final String ACTIVITY_TYPE_FEEDING = "Feeding";
+    public static final String ACTIVITY_TYPE_DIAPER = "Diaper";
+    public static final String ACTIVITY_TYPE_SLEEPING = "Sleeping";
+    public static final String ACTIVITY_TYPE_HEALTH = "Health";
 
     private static final String[] ACTIVITY_COLUMNS = {
             AppContract.ActivitiesEntry.COLUMN_ACTIVITY_TYPE,
@@ -70,6 +77,13 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     public ActivitiesFragment(){}
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        dPosition = 0;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -77,6 +91,8 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
 
         activitiesListView = (ListView) rootView.findViewById(R.id.activities_listview);
         activityFilterDate = (EditText) rootView.findViewById(R.id.activities_filter_date);
+        tvEmptyLoading = (TextView) rootView.findViewById(R.id.text_empty_loading);
+
         activitiesListAdapter = new ActivitiesAdapter(getActivity(),null,0);
         activitiesListView.setAdapter(activitiesListAdapter);
 
@@ -119,19 +135,19 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
 
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 switch(cursor.getString(COL_ACTIVITY_TYPE)){
-                    case "Feeding":
+                    case ACTIVITY_TYPE_FEEDING:
                         FeedingFragment.FEEDING_ID = cursor.getLong(COL_ACTIVITY_ID);
                         ((MainActivity) getActivity()).handleFragments(new FeedingFragment(),FeedingFragment.TAG,FeedingFragment.KEEP_IN_STACK);
                         break;
-                    case "Diaper":
+                    case ACTIVITY_TYPE_DIAPER:
                         DiaperFragment.DIAPER_ID = cursor.getLong(COL_ACTIVITY_ID);
                         ((MainActivity) getActivity()).handleFragments(new DiaperFragment(),DiaperFragment.TAG,DiaperFragment.KEEP_IN_STACK);
                         break;
-                    case "Sleeping":
+                    case ACTIVITY_TYPE_SLEEPING:
                         SleepingFragment.SLEEPING_ID = cursor.getLong(COL_ACTIVITY_ID);
                         ((MainActivity) getActivity()).handleFragments(new SleepingFragment(),SleepingFragment.TAG,SleepingFragment.KEEP_IN_STACK);
                         break;
-                    case "Health":
+                    case ACTIVITY_TYPE_HEALTH:
                         HealthFragment.HEALTH_ID = cursor.getLong(COL_ACTIVITY_ID);
                         ((MainActivity) getActivity()).handleFragments(new HealthFragment(),HealthFragment.TAG,HealthFragment.KEEP_IN_STACK);
                         break;
@@ -145,6 +161,18 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        ((MainActivity) getActivity()).disableActionEditMenus();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
+    }
 
     public void onResume()
     {
@@ -157,6 +185,7 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.v(TAG, "onCreateLoader - " + i + " loader");
+        new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_LOADING,tvEmptyLoading,"");
 
         Uri buildActivitiesUri = AppContract.ActivitiesEntry.buildActivitiesByUserIdBabyIdUri(MainActivity.LOGGED_IN_USER_ID,MainActivity.ACTIVE_BABY_ID,
                 new Utilities(getActivity()).convDateDisp2Db(activityFilterDate.getText().toString()));
@@ -177,8 +206,13 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
         activitiesListAdapter.swapCursor(null);
         if(cursor != null){
             if (cursor.getCount() > 0) {
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_OK,tvEmptyLoading,"");
                 activitiesListAdapter.swapCursor(cursor);
+            }else{
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_activity_list_empty));
             }
+        }else{
+            new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_activity_list_empty));
         }
 
         //scroll to top, after listview are loaded it focuses on listview
@@ -200,4 +234,5 @@ public class ActivitiesFragment extends Fragment implements LoaderManager.Loader
         getLoaderManager().restartLoader(ACTIVITIES_LOADER, null, this);
         //activitiesListAdapter.notifyDataSetChanged();
     }
+
 }

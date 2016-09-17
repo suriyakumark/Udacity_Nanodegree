@@ -17,6 +17,10 @@ import com.squareup.picasso.Picasso;
 public class ArticleDetailAdapter extends CursorAdapter {
     private final String TAG = ArticleDetailAdapter.class.getSimpleName();
     private Context context;
+
+    public static final String ARTICLE_DETAIL_TYPE_TEXT = "text";
+    public static final String ARTICLE_DETAIL_TYPE_IMAGE = "image";
+
     public static class ViewHolder {
 
         public final ImageView imageView;
@@ -52,11 +56,11 @@ public class ArticleDetailAdapter extends CursorAdapter {
         Log.v(TAG, "bindView");
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         if(cursor != null){
-            if(ArticleDetailFragment.ARTICLE_TITLE.isEmpty()){
-                ArticleDetailFragment.ARTICLE_TITLE = cursor.getString(ArticleDetailFragment.COL_ARTICLE_TITLE);
-                ((MainActivity) context).updateToolbarTitle(ArticleDetailFragment.ARTICLE_TITLE);
+            if(cursor.getPosition() == 0){
+                ArticleDetailFragment.articleDetailTitle.setText(cursor.getString(ArticleDetailFragment.COL_ARTICLE_TITLE));
+                ArticleDetailFragment.articleDetailTitle.setContentDescription(ArticleDetailFragment.articleDetailTitle.getText().toString());
             }
-            if(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_TYPE).equals("image")) {
+            if(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_TYPE).equals(ARTICLE_DETAIL_TYPE_IMAGE)) {
                 Picasso.with(context)
                         .load(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_CONTENT))
                         .noFade()
@@ -65,8 +69,9 @@ public class ArticleDetailAdapter extends CursorAdapter {
             }else{
                 viewHolder.imageView.setVisibility(View.GONE);
             }
-            if(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_TYPE).equals("text")) {
+            if(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_TYPE).equals(ARTICLE_DETAIL_TYPE_TEXT)) {
                 viewHolder.textView.setText(cursor.getString(ArticleDetailFragment.COL_ARTICLE_DETAIL_CONTENT));
+                viewHolder.textView.setContentDescription(viewHolder.textView.getText().toString());
                 viewHolder.textView.setVisibility(View.VISIBLE);
             }else{
                 viewHolder.textView.setVisibility(View.GONE);

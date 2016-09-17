@@ -63,17 +63,21 @@ public class ActivitiesAdapter extends CursorAdapter {
         if(cursor != null){
 
             switch (cursor.getString(ActivitiesFragment.COL_ACTIVITY_TYPE)){
-                case "Diaper":
-                    viewHolder.activityIcon.setImageResource(R.drawable.ic_menu_diaper);
-                    break;
-                case "Feeding":
+                case ActivitiesFragment.ACTIVITY_TYPE_FEEDING:
                     viewHolder.activityIcon.setImageResource(R.drawable.ic_menu_feeding);
+                    viewHolder.activityIcon.setContentDescription(ActivitiesFragment.ACTIVITY_TYPE_FEEDING);
                     break;
-                case "Sleeping":
+                case ActivitiesFragment.ACTIVITY_TYPE_DIAPER:
+                    viewHolder.activityIcon.setImageResource(R.drawable.ic_menu_diaper);
+                    viewHolder.activityIcon.setContentDescription(ActivitiesFragment.ACTIVITY_TYPE_DIAPER);
+                    break;
+                case ActivitiesFragment.ACTIVITY_TYPE_SLEEPING:
                     viewHolder.activityIcon.setImageResource(R.drawable.ic_menu_sleeping);
+                    viewHolder.activityIcon.setContentDescription(ActivitiesFragment.ACTIVITY_TYPE_SLEEPING);
                     break;
-                case "Health":
+                case ActivitiesFragment.ACTIVITY_TYPE_HEALTH:
                     viewHolder.activityIcon.setImageResource(R.drawable.ic_menu_health);
+                    viewHolder.activityIcon.setContentDescription(ActivitiesFragment.ACTIVITY_TYPE_HEALTH);
                     break;
                 default:
                     viewHolder.activityIcon.setImageResource(R.drawable.logo);
@@ -84,6 +88,10 @@ public class ActivitiesAdapter extends CursorAdapter {
             viewHolder.activityTime.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_TIME));
             viewHolder.activitySummary.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_SUMMARY));
             viewHolder.activityDetail.setText(cursor.getString(ActivitiesFragment.COL_ACTIVITY_DETAIL));
+
+            viewHolder.activityTime.setContentDescription(viewHolder.activityTime.getText().toString());
+            viewHolder.activitySummary.setContentDescription(viewHolder.activitySummary.getText().toString());
+            viewHolder.activityDetail.setContentDescription(viewHolder.activityDetail.getText().toString());
 
         }
 

@@ -2,7 +2,7 @@ package com.simplesolutions2003.happybabycare;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
 import android.text.InputType;
@@ -42,14 +42,17 @@ public class DiaperFragment extends Fragment {
     public final static boolean KEEP_IN_STACK = false;
     public final static String TAG = DiaperFragment.class.getSimpleName();
     public static long DIAPER_ID = -1;
+    public static final String TITLE_DIAPER = "Diaper";
 
     public final static int DIAPER_TYPE_WET = 1;
     public final static int DIAPER_TYPE_DIRTY = 2;
     public final static int DIAPER_TYPE_MIXED = 3;
     public final static int DIAPER_TYPE_DRY = 4;
 
-    MenuItem saveMenuItem;
-    MenuItem deleteMenuItem;
+    public final static String DIAPER_TYPE_TEXT_WET = "Wet";
+    public final static String DIAPER_TYPE_TEXT_DIRTY = "Dirty";
+    public final static String DIAPER_TYPE_TEXT_MIXED = "Mixed";
+    public final static String DIAPER_TYPE_TEXT_DRY = "Dry";
 
     private static final String[] DIAPER_COLUMNS = {
             AppContract.DiaperEntry.TABLE_NAME + "." + AppContract.DiaperEntry._ID,
@@ -109,6 +112,9 @@ public class DiaperFragment extends Fragment {
         activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
         activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
+        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
+        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
+
         setDiaperType(0);
 
         diaperWet.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +151,7 @@ public class DiaperFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityDate);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -165,7 +171,7 @@ public class DiaperFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityTime);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -179,9 +185,6 @@ public class DiaperFragment extends Fragment {
             }
         });
 
-        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
-        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-
         if(DIAPER_ID != -1) {
             Uri uri = AppContract.DiaperEntry.buildDiaperUri(DIAPER_ID);
             Cursor activityEntry = getActivity().getContentResolver().query(uri,DIAPER_COLUMNS,null,null,null);
@@ -193,6 +196,10 @@ public class DiaperFragment extends Fragment {
                     activityTime.setText(activityEntry.getString(COL_DIAPER_TIME));
                     setDiaperType(getDiaperTypeId(activityEntry.getString(COL_DIAPER_TYPE)));
                     activityNotes.setText(activityEntry.getString(COL_DIAPER_NOTES));
+
+                    activityDate.setContentDescription(activityDate.getText().toString());
+                    activityTime.setContentDescription(activityTime.getText().toString());
+                    activityNotes.setContentDescription(activityNotes.getText().toString());
                 }
             }else{
                 DIAPER_ID = -1;
@@ -205,66 +212,58 @@ public class DiaperFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-        ((MainActivity) getActivity()).updateToolbarTitle("Diaper - " + MainActivity.ACTIVE_BABY_NAME);
+        ((MainActivity) getActivity()).updateToolbarTitle(TITLE_DIAPER + " - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.save_delete, menu);
-        saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
-        deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_save){
-            actionSave();
-            return true;
-        }
-        if(id == R.id.action_delete){
-            if(DIAPER_ID != -1) {
-                actionDelete();
-            }
-            return true;
+        switch (id){
+            case R.id.action_save:
+                actionSave();
+                return true;
+            case R.id.action_delete:
+                if(DIAPER_ID != -1) {
+                    actionDelete();
+                }
+                return true;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu){
-        validateInputs();
-        super.onPrepareOptionsMenu(menu);
+    public void validateInputs() {
+        if(activityDate.getText().toString().isEmpty() |
+                activityTime.getText().toString().isEmpty()){
+            MainActivity.saveMenuEnabled = false;
+        }else{
+            MainActivity.saveMenuEnabled = true;
+        }
+        if (DIAPER_ID == -1) {
+            MainActivity.deleteMenuEnabled = false;
+        } else {
+            MainActivity.deleteMenuEnabled = true;
+        }
     }
 
-    public void validateInputs() {
-        if(saveMenuItem != null) {
-            if(activityDate.getText().toString().isEmpty() |
-                    activityTime.getText().toString().isEmpty()){
-
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "save disabled");
-            }else{
-                saveMenuItem.setEnabled(true);
-                saveMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "save enabled");
-            }
-        }
-        if(deleteMenuItem != null) {
-            if (DIAPER_ID != -1) {
-                deleteMenuItem.setEnabled(true);
-                deleteMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "DELETE enabled");
-            } else {
-                deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "DELETE disabled");
-            }
-        }
+    public void updateMenuVisibility(){
+        validateInputs();
         ActivityCompat.invalidateOptionsMenu(getActivity());
     }
 
@@ -284,17 +283,17 @@ public class DiaperFragment extends Fragment {
         if(DIAPER_ID == -1) {
             DIAPER_ID = AppContract.DiaperEntry.getIdFromUri(getActivity().getContentResolver().insert(uri, newValues));
             if(DIAPER_ID == -1){
-                Toast.makeText(getActivity(), "Could not save diaper entry", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_entry_cannot_save) + TITLE_DIAPER, Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getActivity(), "Diaper entry added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), TITLE_DIAPER + getString(R.string.text_entry_added), Toast.LENGTH_LONG).show();
             }
         }else{
             String sWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
             String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
             getActivity().getContentResolver().update(uri, newValues, sWhere,sWhereArgs);
-            Toast.makeText(getActivity(), "Diaper entry saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), TITLE_DIAPER + getString(R.string.text_entry_saved), Toast.LENGTH_LONG).show();
         }
-        goBack();
+        goFinish();
     }
 
     public void actionDelete(){
@@ -304,14 +303,13 @@ public class DiaperFragment extends Fragment {
         String sWhere = AppContract.DiaperEntry.COLUMN_USER_ID + " = ? AND " + AppContract.DiaperEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.DiaperEntry._ID + " = ?";
         String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(DiaperFragment.DIAPER_ID)};
         getActivity().getContentResolver().delete(uri, sWhere, sWhereArgs);
-        Toast.makeText(getActivity(), "Diaper entry deleted", Toast.LENGTH_LONG).show();
-        DIAPER_ID = -1;
-        goBack();
+        Toast.makeText(getActivity(), TITLE_DIAPER + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
+        goFinish();
     }
 
 
-    public void goBack(){
-        Log.v(TAG, "goBack");
+    public void goFinish(){
+        Log.v(TAG, "goFinish");
         DIAPER_ID = -1;
         ((MainActivity) getActivity()).handleFragments(new ActivitiesFragment(),ActivitiesFragment.TAG,ActivitiesFragment.KEEP_IN_STACK);
         //((MainActivity) getActivity()).handleFragments(true);
@@ -320,26 +318,26 @@ public class DiaperFragment extends Fragment {
     public String getDiaperTypeName(int type){
         switch(type){
             case DIAPER_TYPE_WET:
-                return "Wet";
+                return DIAPER_TYPE_TEXT_WET;
             case DIAPER_TYPE_DIRTY:
-                return "Dirty";
+                return DIAPER_TYPE_TEXT_DIRTY;
             case DIAPER_TYPE_MIXED:
-                return "Mixed";
+                return DIAPER_TYPE_TEXT_MIXED;
             case DIAPER_TYPE_DRY:
             default:
-                return "Dry";
+                return DIAPER_TYPE_TEXT_DRY;
         }
     }
 
     public int getDiaperTypeId(String type){
         switch(type){
-            case "Wet":
+            case DIAPER_TYPE_TEXT_WET:
                 return DIAPER_TYPE_WET;
-            case "Dirty":
+            case DIAPER_TYPE_TEXT_DIRTY:
                 return DIAPER_TYPE_DIRTY;
-            case "Mixed":
+            case DIAPER_TYPE_TEXT_MIXED:
                 return DIAPER_TYPE_MIXED;
-            case "Dry":
+            case DIAPER_TYPE_TEXT_DRY:
             default:
                 return DIAPER_TYPE_DRY;
         }
@@ -347,24 +345,32 @@ public class DiaperFragment extends Fragment {
 
     public void setDiaperType(int type){
         diaperWet.setImageAlpha(100);
+        diaperWet.setContentDescription(getString(R.string.text_diaper_wet) + getString(R.string.cd_not_selected));
         diaperDirty.setImageAlpha(100);
+        diaperDirty.setContentDescription(getString(R.string.text_diaper_dirty) + getString(R.string.cd_not_selected));
         diaperMixed.setImageAlpha(100);
+        diaperMixed.setContentDescription(getString(R.string.text_diaper_mixed) + getString(R.string.cd_not_selected));
         diaperDry.setImageAlpha(100);
+        diaperDry.setContentDescription(getString(R.string.text_diaper_dry) + getString(R.string.cd_not_selected));
         diaperType = type;
 
         switch (diaperType){
             case DIAPER_TYPE_WET:
                 diaperWet.setImageAlpha(255);
+                diaperWet.setContentDescription(getString(R.string.text_diaper_wet) + getString(R.string.cd_selected));
                 break;
             case DIAPER_TYPE_DIRTY:
                 diaperDirty.setImageAlpha(255);
+                diaperDirty.setContentDescription(getString(R.string.text_diaper_dirty) + getString(R.string.cd_selected));
                 break;
             case DIAPER_TYPE_MIXED:
                 diaperMixed.setImageAlpha(255);
+                diaperMixed.setContentDescription(getString(R.string.text_diaper_mixed) + getString(R.string.cd_selected));
                 break;
             case DIAPER_TYPE_DRY:
             default:
                 diaperDry.setImageAlpha(255);
+                diaperDry.setContentDescription(getString(R.string.text_diaper_dry) + getString(R.string.cd_selected));
                 break;
         }
     }

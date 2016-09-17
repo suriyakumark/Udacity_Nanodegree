@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:contentDescription="@string/cd_group_manage"
     android:background="@color/colorAccentLight">
     <LinearLayout
         android:orientation="horizontal"
@@ -14,22 +15,27 @@
             android:layout_width="0dp"
             android:layout_weight="0.7"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/margin_medium"
             android:maxLength="50"
             android:maxLines="1"
-            android:hint="Add members" />
+            android:contentDescription="@string/cd_group_manage_member_id"
+            android:hint="@string/text_group_member" />
         <Button
             android:id="@+id/group_add_member"
             android:layout_width="0dp"
             android:layout_weight="0.3"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
-            android:layout_margin="16dp"
-            android:text="Add" />
+            android:layout_margin="@dimen/margin_medium"
+            android:contentDescription="@string/cd_group_manage_add"
+            android:text="@string/btn_group_member_add" />
     </LinearLayout>
+
+    <include layout="@layout/empty_loading" />
+
     <ListView
         android:id="@+id/group_members_list"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/margin_small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

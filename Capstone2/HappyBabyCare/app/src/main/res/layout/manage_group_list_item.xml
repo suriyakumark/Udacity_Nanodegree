@@ -11,22 +11,22 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical|start"
         android:layout_gravity="center_vertical|start"
-        android:paddingStart="16dp"
+        android:paddingStart="@dimen/padding_text"
         android:textSize="18sp"
         android:id="@+id/member_email" />
     <View android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1" />
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/size_action_icon"
+        android:layout_height="@dimen/size_action_icon"
         android:gravity="center_vertical|end"
         android:layout_gravity="center_vertical|end"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
-        android:padding="@dimen/padding_btn"
+        android:paddingEnd="@dimen/padding_btn"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_clear_black_24dp"
         android:id="@+id/member_delete" />

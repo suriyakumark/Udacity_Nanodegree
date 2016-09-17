@@ -1,10 +1,10 @@
 package com.simplesolutions2003.happybabycare;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,12 +12,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -32,6 +35,7 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
     private int dPosition;
     private GroupManageAdapter groupListAdapter;
     ListView groupListView;
+    TextView tvEmptyLoading;
     EditText memberId;
     Button addMember;
 
@@ -52,6 +56,7 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         dPosition = 0;
     }
 
@@ -65,7 +70,7 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
         groupListView = (ListView) rootView.findViewById(R.id.group_members_list);
         memberId = (EditText) rootView.findViewById(R.id.new_member);
         addMember = (Button) rootView.findViewById(R.id.group_add_member);
-
+        tvEmptyLoading = (TextView) rootView.findViewById(R.id.text_empty_loading);
         addMember.setEnabled(false);
 
         memberId.addTextChangedListener(new TextWatcher() {
@@ -110,6 +115,20 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
         return rootView;
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        ((MainActivity) getActivity()).disableActionEditMenus();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
+    }
+
     public void onResume()
     {
         super.onResume();
@@ -125,7 +144,7 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.v(TAG, "onCreateLoader - " + i + " loader");
-
+        new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_LOADING,tvEmptyLoading,"");
         Uri buildGroup = AppContract.GroupEntry.buildGroupByGroupIdUri(MainActivity.GROUP_ID);
 
         return new CursorLoader(getActivity(),
@@ -144,9 +163,14 @@ public class GroupManageFragment extends Fragment implements LoaderManager.Loade
         if(cursor != null){
             if (cursor.getCount() > 0) {
                 groupListAdapter.swapCursor(cursor);
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_OK,tvEmptyLoading,"");
+            }else{
+                groupListAdapter.swapCursor(null);
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_group_list_empty));
             }
         }else{
             groupListAdapter.swapCursor(null);
+            new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_group_list_empty));
         }
 
         //scroll to top, after listview are loaded it focuses on listview

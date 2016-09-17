@@ -66,6 +66,9 @@ public class GroupManageAdapter  extends CursorAdapter implements View.OnClickLi
 
             viewHolder.memberDelete.setTag(new String[]{Long.toString(cursor.getLong(GroupManageFragment.COL_GROUP_ID))});
             viewHolder.memberDelete.setOnClickListener(this);
+
+            viewHolder.memberEmail.setContentDescription(viewHolder.memberEmail.getText().toString());
+            viewHolder.memberDelete.setContentDescription(context.getString(R.string.btn_group_member_remove) + " " + viewHolder.memberEmail.getText().toString());
         }
 
     }

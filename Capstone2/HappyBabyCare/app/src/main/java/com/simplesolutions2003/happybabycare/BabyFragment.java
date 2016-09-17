@@ -1,13 +1,14 @@
 package com.simplesolutions2003.happybabycare;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -27,10 +29,13 @@ import com.simplesolutions2003.happybabycare.data.AppContract;
 public class BabyFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     public final static boolean KEEP_IN_STACK = true;
     public final static String TAG = BabyFragment.class.getSimpleName();
+    public final static String TITLE_BABY = "Baby Profiles";
+
     private final static int BABY_LOADER = 0;
     private int dPosition;
     private BabyAdapter babyListAdapter;
     ListView babyListView;
+    TextView tvEmptyLoading;
 
     private static final String[] BABY_COLUMNS = {
             AppContract.BabyEntry.TABLE_NAME + "." + AppContract.BabyEntry._ID,
@@ -74,31 +79,64 @@ public class BabyFragment extends Fragment implements LoaderManager.LoaderCallba
 
         babyListAdapter = new BabyAdapter(getActivity(),null,0);
         babyListView.setAdapter(babyListAdapter);
+        tvEmptyLoading = (TextView) rootView.findViewById(R.id.text_empty_loading);
+        babyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                dPosition = babyListView.getScrollY();
+                Log.v(TAG,"setOnItemClickListener - dPosition " + dPosition);
+
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                MainActivity.ACTIVE_BABY_ID = cursor.getLong(COL_BABY_ID);
+                MainActivity.ACTIVE_BABY_NAME = cursor.getString(COL_BABY_NAME);
+                ((MainActivity) getActivity()).handleFragments(new ActivitiesFragment(), ActivitiesFragment.TAG, ActivitiesFragment.KEEP_IN_STACK);
+
+            }
+        });
 
         return rootView;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add, menu);  // Use filter.xml from step 1
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
-        if(id == R.id.action_add){
-            MainActivity.ACTIVE_BABY_ID = -1;
-            ((MainActivity) getActivity()).handleFragments(new BabyProfileFragment(),BabyProfileFragment.TAG,BabyProfileFragment.KEEP_IN_STACK);
-            return true;
+        switch (id){
+            case R.id.action_add:
+                MainActivity.ACTIVE_BABY_ID = -1;
+                ((MainActivity) getActivity()).handleFragments(new BabyProfileFragment(),BabyProfileFragment.TAG,BabyProfileFragment.KEEP_IN_STACK);
+                return true;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    public void validateInputs() {
+        MainActivity.addMenuEnabled = true;
+    }
+
     public void onResume()
     {
         super.onResume();
-        ((MainActivity) getActivity()).updateToolbarTitle("Baby Profiles");
+        ((MainActivity) getActivity()).updateToolbarTitle(TITLE_BABY);
         getLoaderManager().initLoader(BABY_LOADER, null, this);
     }
 
@@ -106,7 +144,7 @@ public class BabyFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.v(TAG, "onCreateLoader - " + i + " loader");
-
+        new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_LOADING,tvEmptyLoading,"");
         Uri buildBaby = AppContract.BabyEntry.buildBabyByUserIdUri(MainActivity.LOGGED_IN_USER_ID);
 
         return new CursorLoader(getActivity(),
@@ -122,10 +160,16 @@ public class BabyFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.v(TAG, "onLoadFinished - " + loader.getId() + " loader - " + cursor.getCount() + " rows retrieved");
+
         if(cursor != null){
-            if (cursor.getCount() > 0) {
+            if(cursor.getCount() > 0){
                 babyListAdapter.swapCursor(cursor);
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_OK,tvEmptyLoading,"");
+            }else{
+                new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_baby_list_empty));
             }
+        }else{
+            new Utilities(getActivity()).updateEmptyLoadingGone(Utilities.LIST_EMPTY,tvEmptyLoading,getString(R.string.text_baby_list_empty));
         }
 
         //scroll to top, after listview are loaded it focuses on listview

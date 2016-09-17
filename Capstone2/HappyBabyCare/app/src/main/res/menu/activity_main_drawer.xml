@@ -49,10 +49,7 @@
                 android:checkable="true" />
         </menu>
     </item>
-        <item
-            android:id="@+id/nav_settings"
-            android:title="Settings" />
-        <item
+    <item
             android:id="@+id/nav_signout"
             android:title="Sign Out" />
 </menu>

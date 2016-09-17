@@ -1,12 +1,11 @@
 package com.simplesolutions2003.happybabycare;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,54 +43,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import android.os.Bundle;
-import android.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
-import android.text.Editable;
-import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.app.DatePickerDialog;
-import android.app.FragmentManager;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.widget.Toast;
-
-import com.simplesolutions2003.happybabycare.data.AppContract;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 /**
  * Created by SuriyaKumar on 8/20/2016.
  */
 public class HealthFragment extends Fragment {
     public final static boolean KEEP_IN_STACK = false;
     public final static String TAG = HealthFragment.class.getSimpleName();
-
+    public static final String TITLE_HEALTH = "Health";
     public static long HEALTH_ID = -1;
-
-    MenuItem saveMenuItem;
-    MenuItem deleteMenuItem;
 
     private static final String[] HEALTH_COLUMNS = {
             AppContract.HealthEntry.TABLE_NAME + "." + AppContract.HealthEntry._ID,
@@ -142,6 +101,14 @@ public class HealthFragment extends Fragment {
         healthType = (Spinner) rootView.findViewById(R.id.health_title);
         healthValue = (EditText) rootView.findViewById(R.id.health_summary);
 
+        activityDate.setInputType(InputType.TYPE_NULL);
+        activityTime.setInputType(InputType.TYPE_NULL);
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
+        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
+
+        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
+        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
+
 
         healthValue.addTextChangedListener(new TextWatcher() {
 
@@ -157,7 +124,7 @@ public class HealthFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                validateInputs();
+                updateMenuVisibility();
             }
         });
 
@@ -166,7 +133,7 @@ public class HealthFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityDate);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -186,7 +153,7 @@ public class HealthFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityTime);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -199,11 +166,6 @@ public class HealthFragment extends Fragment {
 
             }
         });
-
-        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
-        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
-        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(HEALTH_ID != -1) {
             Uri uri = AppContract.HealthEntry.buildHealthUri(HEALTH_ID);
@@ -218,11 +180,17 @@ public class HealthFragment extends Fragment {
                     for(int iType = 0; iType < healthType.getCount(); iType++){
                         if(activityEntry.getString(COL_HEALTH_TYPE).equals(healthType.getItemAtPosition(iType).toString())){
                             healthType.setSelection(iType);
+                            healthType.setContentDescription(activityEntry.getString(COL_HEALTH_TYPE));
                             break;
                         }
                     }
 
                     healthValue.setText(activityEntry.getString(COL_HEALTH_VALUE));
+
+                    activityDate.setContentDescription(activityDate.getText().toString());
+                    activityTime.setContentDescription(activityTime.getText().toString());
+                    activityNotes.setContentDescription(activityNotes.getText().toString());
+                    healthValue.setContentDescription(healthValue.getText().toString());
                 }
             }else{
                 HEALTH_ID = -1;
@@ -236,69 +204,60 @@ public class HealthFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-        ((MainActivity) getActivity()).updateToolbarTitle("Health - " + MainActivity.ACTIVE_BABY_NAME);
+        ((MainActivity) getActivity()).updateToolbarTitle(TITLE_HEALTH + " - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.save_delete, menu);
-        saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
-        deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_save){
-            actionSave();
-            return true;
+        switch (id){
+            case R.id.action_save:
+                actionSave();
+                return true;
+            case R.id.action_delete:
+                if(HEALTH_ID != -1) {
+                    actionDelete();
+                }
+                return true;
+            default:
+                break;
         }
-        if(id == R.id.action_delete){
-            if(HEALTH_ID != -1) {
-                actionDelete();
-            }
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
+    public void validateInputs() {
+        if(activityDate.getText().toString().isEmpty() |
+                activityTime.getText().toString().isEmpty() |
+                healthType.getSelectedItem().toString().isEmpty() |
+                healthValue.getText().toString().isEmpty()){
+            MainActivity.saveMenuEnabled = false;
+        }else{
+            MainActivity.saveMenuEnabled = true;
+        }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu){
-        validateInputs();
-        super.onPrepareOptionsMenu(menu);
+        if (HEALTH_ID == -1) {
+            MainActivity.deleteMenuEnabled = false;
+        } else {
+            MainActivity.deleteMenuEnabled = true;
+        }
     }
 
-    public void validateInputs() {
-        if(saveMenuItem != null) {
-            if(!activityDate.getText().toString().isEmpty() &
-                    !activityTime.getText().toString().isEmpty() &
-                    !healthType.getSelectedItem().toString().isEmpty() &
-                    !healthValue.getText().toString().isEmpty()){
-
-                saveMenuItem.setEnabled(true);
-                saveMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "save enabled");
-            }else{
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "save disabled");
-            }
-        }
-        if(deleteMenuItem != null) {
-            if (HEALTH_ID != -1) {
-                deleteMenuItem.setEnabled(true);
-                deleteMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "delete enabled");
-            } else {
-                deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "delete disabled");
-            }
-        }
+    public void updateMenuVisibility(){
+        validateInputs();
         ActivityCompat.invalidateOptionsMenu(getActivity());
     }
+
 
     public void actionSave(){
         Log.v(TAG, "actionSave");
@@ -316,17 +275,17 @@ public class HealthFragment extends Fragment {
         if(HEALTH_ID == -1) {
             HEALTH_ID = AppContract.HealthEntry.getIdFromUri(getActivity().getContentResolver().insert(uri, newValues));
             if(HEALTH_ID == -1){
-                Toast.makeText(getActivity(), "Could not save health entry", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_entry_cannot_save) + TITLE_HEALTH, Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getActivity(), "Health entry added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), TITLE_HEALTH + getString(R.string.text_entry_added), Toast.LENGTH_LONG).show();
             }
         }else{
             String sWhere = AppContract.HealthEntry.COLUMN_USER_ID + " = ? AND " + AppContract.HealthEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.HealthEntry._ID + " = ?";
             String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(HEALTH_ID)};
             getActivity().getContentResolver().update(uri, newValues, sWhere,sWhereArgs);
-            Toast.makeText(getActivity(), "Health entry saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), TITLE_HEALTH + getString(R.string.text_entry_saved), Toast.LENGTH_LONG).show();
         }
-        goBack();
+        goFinish();
     }
 
     public void actionDelete(){
@@ -336,14 +295,13 @@ public class HealthFragment extends Fragment {
         String sWhere = AppContract.HealthEntry.COLUMN_USER_ID + " = ? AND " + AppContract.HealthEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.HealthEntry._ID + " = ?";
         String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(HEALTH_ID)};
         getActivity().getContentResolver().delete(uri, sWhere, sWhereArgs);
-        Toast.makeText(getActivity(), "Health entry deleted", Toast.LENGTH_LONG).show();
-        HEALTH_ID = -1;
-        goBack();
+        Toast.makeText(getActivity(), TITLE_HEALTH + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
+        goFinish();
     }
 
 
-    public void goBack(){
-        Log.v(TAG, "goBack");
+    public void goFinish(){
+        Log.v(TAG, "goFinish");
         HEALTH_ID = -1;
         ((MainActivity) getActivity()).handleFragments(new ActivitiesFragment(),ActivitiesFragment.TAG,ActivitiesFragment.KEEP_IN_STACK);
         //((MainActivity) getActivity()).handleFragments(true);

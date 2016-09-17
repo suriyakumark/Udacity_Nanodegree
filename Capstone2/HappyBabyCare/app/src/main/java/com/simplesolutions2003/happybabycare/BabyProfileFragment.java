@@ -19,7 +19,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -62,9 +62,6 @@ public class BabyProfileFragment extends Fragment {
     RadioGroup babyGenderGroup;
     RadioButton babyGenderMale;
     RadioButton babyGenderFeMale;
-
-    MenuItem saveMenuItem;
-    MenuItem deleteMenuItem;
 
     Bitmap image = null;
     Bitmap rotateImage = null;
@@ -118,7 +115,7 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //ActivityCompat.invalidateOptionsMenu(getActivity());
+
             }
 
             @Override
@@ -128,7 +125,7 @@ public class BabyProfileFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+                updateMenuVisibility();
             }
         });
 
@@ -138,7 +135,7 @@ public class BabyProfileFragment extends Fragment {
             public void afterTextChanged(Editable s) {
 
                 new Utilities(getActivity()).resetFocus(babyBirthDate);
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+                updateMenuVisibility();
             }
 
             @Override
@@ -158,7 +155,7 @@ public class BabyProfileFragment extends Fragment {
             public void afterTextChanged(Editable s) {
 
                 new Utilities(getActivity()).resetFocus(babyDueDate);
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+                updateMenuVisibility();
             }
 
             @Override
@@ -200,13 +197,22 @@ public class BabyProfileFragment extends Fragment {
                     babyDueDate.setText(babyprofile.getString(COL_BABY_DUE_DATE));
                     if(babyprofile.getString(COL_BABY_GENDER).equals(babyGenderMale.getText().toString())) {
                         babyGenderMale.setChecked(true);
+                        babyGenderMale.setContentDescription(getString(R.string.cd_selected));
+                        babyGenderFeMale.setContentDescription(getString(R.string.cd_not_selected));
                     }else{
                         babyGenderFeMale.setChecked(true);
+                        babyGenderMale.setContentDescription(getString(R.string.cd_not_selected));
+                        babyGenderFeMale.setContentDescription(getString(R.string.cd_selected));
                     }
                     if(babyprofile.getString(COL_BABY_PHOTO) != null){
                         babyProfilePhotoUri = Uri.parse(babyprofile.getString(COL_BABY_PHOTO));
                         setBabyProfilePhoto();
                     }
+
+                    babyName.setContentDescription(babyName.getText().toString());
+                    babyBirthDate.setContentDescription(babyBirthDate.getText().toString());
+                    babyDueDate.setContentDescription(babyDueDate.getText().toString());
+
                 }
             }else{
                 MainActivity.ACTIVE_BABY_ID = -1;
@@ -217,33 +223,37 @@ public class BabyProfileFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.save_delete, menu);
-        saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
-        deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
     }
 
 
     @Override
     public void onPrepareOptionsMenu(Menu menu){
-        validateInputs();
         super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_save){
-            actionSave();
-            return true;
+        switch (id){
+            case R.id.action_save:
+                actionSave();
+                return true;
+            case R.id.action_delete:
+                if(MainActivity.ACTIVE_BABY_ID != -1) {
+                    actionDelete();
+                }
+                return true;
+            default:
+                break;
         }
-        if(id == R.id.action_delete){
-            if(MainActivity.ACTIVE_BABY_ID != -1) {
-                actionDelete();
-            }
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void updateMenuVisibility(){
+        validateInputs();
+        ActivityCompat.invalidateOptionsMenu(getActivity());
     }
 
     @Override
@@ -264,31 +274,18 @@ public class BabyProfileFragment extends Fragment {
     }
 
     public void validateInputs() {
-        if(saveMenuItem != null) {
-            if(!babyName.getText().toString().isEmpty() &
-                !babyBirthDate.getText().toString().isEmpty() &
-                !babyDueDate.getText().toString().isEmpty()){
-                saveMenuItem.setEnabled(true);
-                saveMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "save enabled");
-            }else{
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "save disabled");
-            }
-        }
-        if(deleteMenuItem != null) {
-            if (MainActivity.ACTIVE_BABY_ID != -1) {
-                deleteMenuItem.setEnabled(true);
-                deleteMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "DELETE enabled");
-            } else {
-                deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "DELETE disabled");
-            }
+        if(babyName.getText().toString().isEmpty() |
+            babyBirthDate.getText().toString().isEmpty()){
+            MainActivity.saveMenuEnabled = false;
+        }else{
+            MainActivity.saveMenuEnabled = true;
         }
 
+        if (MainActivity.ACTIVE_BABY_ID == -1) {
+            MainActivity.deleteMenuEnabled = false;
+        } else {
+            MainActivity.deleteMenuEnabled = true;
+        }
     }
 
     public void setBabyProfilePhoto(){
@@ -325,6 +322,7 @@ public class BabyProfileFragment extends Fragment {
         newValues.put(AppContract.BabyEntry.COLUMN_NAME , babyName.getText().toString());
         newValues.put(AppContract.BabyEntry.COLUMN_BIRTH_DATE, babyBirthDate.getText().toString());
         newValues.put(AppContract.BabyEntry.COLUMN_DUE_DATE, babyDueDate.getText().toString());
+
         if(babyGenderGroup.getCheckedRadioButtonId() == babyGenderMale.getId()) {
             newValues.put(AppContract.BabyEntry.COLUMN_GENDER, babyGenderMale.getText().toString());
         }else{
@@ -334,18 +332,20 @@ public class BabyProfileFragment extends Fragment {
             newValues.put(AppContract.BabyEntry.COLUMN_PHOTO, babyProfilePhotoUri.toString());
         }
 
+        MainActivity.ACTIVE_BABY_NAME = babyName.getText().toString();
         if(MainActivity.ACTIVE_BABY_ID == -1) {
             MainActivity.ACTIVE_BABY_ID = AppContract.BabyEntry.getIdFromUri(getActivity().getContentResolver().insert(baby_uri, newValues));
             if(MainActivity.ACTIVE_BABY_ID == -1){
-                Toast.makeText(getActivity(), "Could not save baby profile", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_baby_cannot_save), Toast.LENGTH_LONG).show();
+                MainActivity.ACTIVE_BABY_NAME = null;
             }else{
-                Toast.makeText(getActivity(), "Baby profile added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_baby_added), Toast.LENGTH_LONG).show();
             }
         }else{
             String babyWhere = AppContract.BabyEntry._ID + " = ? AND " + AppContract.BabyEntry.COLUMN_USER_ID + " = ? ";
             String[] babyWhereArgs = new String[]{Long.toString(MainActivity.ACTIVE_BABY_ID),MainActivity.LOGGED_IN_USER_ID};
             getActivity().getContentResolver().update(baby_uri, newValues, babyWhere,babyWhereArgs);
-            Toast.makeText(getActivity(), "Baby profile saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.text_baby_saved), Toast.LENGTH_LONG).show();
         }
         goBack();
     }
@@ -357,8 +357,9 @@ public class BabyProfileFragment extends Fragment {
         String babyWhere = AppContract.BabyEntry._ID + " = ? AND " + AppContract.BabyEntry.COLUMN_USER_ID + " = ? ";
         String[] babyWhereArgs = new String[]{Long.toString(MainActivity.ACTIVE_BABY_ID),MainActivity.LOGGED_IN_USER_ID};
         getActivity().getContentResolver().delete(baby_uri, babyWhere,babyWhereArgs);
-        Toast.makeText(getActivity(), "Baby profile deleted", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), getString(R.string.text_baby_deleted), Toast.LENGTH_LONG).show();
         MainActivity.ACTIVE_BABY_ID = -1;
+        MainActivity.ACTIVE_BABY_NAME = null;
         goBack();
     }
 

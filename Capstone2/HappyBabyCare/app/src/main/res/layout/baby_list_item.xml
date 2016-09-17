@@ -25,9 +25,9 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content"            
             android:gravity="start"
-            android:textSize="18sp"
+            android:textSize="@dimen/size_title"
             android:id="@+id/baby_name" />
         <TextView
             android:layout_width="wrap_content"
@@ -44,8 +44,8 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/size_action_icon"
+        android:layout_height="@dimen/size_action_icon"
         android:gravity="center_vertical|end"
         android:layout_gravity="center_vertical|end"
         android:focusable="false"
@@ -58,8 +58,8 @@
         android:id="@+id/baby_select" />
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/size_action_icon"
+        android:layout_height="@dimen/size_action_icon"
         android:gravity="center_vertical|end"
         android:layout_gravity="center_vertical|end"
         android:focusable="false"

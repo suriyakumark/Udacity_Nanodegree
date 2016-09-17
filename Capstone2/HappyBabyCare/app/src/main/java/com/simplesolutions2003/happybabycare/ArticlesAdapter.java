@@ -69,6 +69,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         mCursor.moveToPosition(position);
         holder.titleView.setText(mCursor.getString(ArticlesFragment.COL_ARTICLE_TITLE));
         holder.subtitleView.setText(mCursor.getString(ArticlesFragment.COL_ARTICLE_CATEGORY));
+
         Picasso.with(context)
                 .load(mCursor.getString(ArticlesFragment.COL_ARTICLE_COVER_PIC))
                 .noFade()
@@ -77,6 +78,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         //add logic for accessibility
         holder.titleView.setContentDescription(holder.titleView.getText());
         holder.subtitleView.setContentDescription(holder.subtitleView.getText());
+        holder.thumbnailView.setContentDescription(holder.titleView.getText());
     }
 
     @Override

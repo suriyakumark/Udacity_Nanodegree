@@ -12,13 +12,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        android:padding="8dp"
+        android:layout_margin="@dimen/margin_small"
+        android:background="@drawable/edittext_bg"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/padding_text"
+        android:contentDescription="@string/cd_date"
         android:hint="@string/text_date" />
     <EditText
         android:id="@+id/activity_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        android:padding="8dp"
+        android:layout_margin="@dimen/margin_small"
+        android:background="@drawable/edittext_bg"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/padding_text"
+        android:contentDescription="@string/cd_time"
         android:hint="@string/text_time" />
 </LinearLayout>

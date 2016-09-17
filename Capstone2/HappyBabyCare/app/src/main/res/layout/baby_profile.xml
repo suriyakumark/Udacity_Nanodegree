@@ -3,6 +3,7 @@
     android:orientation="vertical"
 	android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="@string/cd_baby_edit"
         android:background="@color/colorAccentLight">
         
     <ImageButton
@@ -12,6 +13,7 @@
         android:layout_height="@dimen/profile_photo_height"
 		android:scaleType="centerCrop"
 		android:adjustViewBounds="true"
+		android:contentDescription="@string/cd_baby_edit_pic"
 		android:src="@drawable/logo"
 		android:padding="8dp"/>
 
@@ -20,22 +22,24 @@
 		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:contentDescription="@string/cd_baby_edit_name"
 		android:maxLines="1"
-		android:padding="8dp"
+		android:padding="@dimen/padding_text"
 		android:hint="@string/text_baby_name" />
             
 	<RadioGroup
 		android:id="@+id/baby_gender"
 		android:layout_gravity="center_horizontal"
+		android:contentDescription="@string/cd_baby_edit_gender"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:padding="8dp">
+		android:padding="@dimen/padding_text">
 
 		<RadioButton
 			android:id="@+id/baby_gender_male"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="8dp"
+			android:padding="@dimen/padding_text"
 			android:text="@string/text_baby_gender_male"
 			android:checked="true" />
 
@@ -43,7 +47,7 @@
 			android:id="@+id/baby_gender_female"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:padding="8dp"
+			android:padding="@dimen/padding_text"
 			android:text="@string/text_baby_gender_female" />
 	    
 	</RadioGroup>
@@ -53,7 +57,8 @@
 		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:padding="8dp"
+		android:contentDescription="@string/cd_baby_edit_birthdate"
+		android:padding="@dimen/padding_text"
 		android:hint="@string/text_baby_birthdate" />
 
 	<EditText
@@ -61,7 +66,8 @@
 		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:padding="8dp"
+		android:contentDescription="@string/cd_baby_edit_duedate"
+		android:padding="@dimen/padding_text"
 		android:hint="@string/text_baby_due_date" />
 
 </LinearLayout>

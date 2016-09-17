@@ -1,7 +1,7 @@
 package com.simplesolutions2003.happybabycare;
 
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,10 +45,8 @@ import java.util.Locale;
 public class SleepingFragment extends Fragment {
     public final static boolean KEEP_IN_STACK = false;
     public final static String TAG = SleepingFragment.class.getSimpleName();
+    public static final String TITLE_SLEEPING = "Sleeping";
     public static long SLEEPING_ID = -1;
-
-    MenuItem saveMenuItem;
-    MenuItem deleteMenuItem;
 
     private static final String[] SLEEPING_COLUMNS = {
             AppContract.SleepingEntry.TABLE_NAME + "." + AppContract.SleepingEntry._ID,
@@ -98,6 +96,13 @@ public class SleepingFragment extends Fragment {
         sleepingDuration = (EditText) rootView.findViewById(R.id.sleep_duration);
         sleepingWhere = (Spinner) rootView.findViewById(R.id.sleep_place);
 
+        activityDate.setInputType(InputType.TYPE_NULL);
+        activityTime.setInputType(InputType.TYPE_NULL);
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
+        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
+
+        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
+        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
 
         sleepingDuration.addTextChangedListener(new TextWatcher() {
 
@@ -113,7 +118,7 @@ public class SleepingFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                validateInputs();
+                updateMenuVisibility();
             }
         });
 
@@ -122,7 +127,7 @@ public class SleepingFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityDate);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -142,7 +147,7 @@ public class SleepingFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityTime);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -155,11 +160,6 @@ public class SleepingFragment extends Fragment {
 
             }
         });
-
-        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
-        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
-        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(SLEEPING_ID != -1) {
             Uri uri = AppContract.SleepingEntry.buildSleepingUri(SLEEPING_ID);
@@ -175,9 +175,15 @@ public class SleepingFragment extends Fragment {
                     for(int iType = 0; iType < sleepingWhere.getCount(); iType++){
                         if(activityEntry.getString(COL_SLEEPING_WHERE_SLEEP).equals(sleepingWhere.getItemAtPosition(iType).toString())){
                             sleepingWhere.setSelection(iType);
+                            sleepingWhere.setContentDescription(activityEntry.getString(COL_SLEEPING_WHERE_SLEEP));
                             break;
                         }
                     }
+
+                    activityDate.setContentDescription(activityDate.getText().toString());
+                    activityTime.setContentDescription(activityTime.getText().toString());
+                    activityNotes.setContentDescription(activityNotes.getText().toString());
+                    sleepingDuration.setContentDescription(sleepingDuration.getText().toString());
                 }
             }else{
                 SLEEPING_ID = -1;
@@ -191,66 +197,58 @@ public class SleepingFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-        ((MainActivity) getActivity()).updateToolbarTitle("Sleeping - " + MainActivity.ACTIVE_BABY_NAME);
+        ((MainActivity) getActivity()).updateToolbarTitle(TITLE_SLEEPING + " - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.save_delete, menu);
-        saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
-        deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_save){
-            actionSave();
-            return true;
-        }
-        if(id == R.id.action_delete){
-            if(SLEEPING_ID != -1) {
-                actionDelete();
-            }
-            return true;
+        switch (id){
+            case R.id.action_save:
+                actionSave();
+                return true;
+            case R.id.action_delete:
+                if(SLEEPING_ID != -1) {
+                    actionDelete();
+                }
+                return true;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu){
-        validateInputs();
-        super.onPrepareOptionsMenu(menu);
+    public void validateInputs() {
+        if(activityDate.getText().toString().isEmpty() |
+                activityTime.getText().toString().isEmpty() |
+                sleepingDuration.getText().toString().isEmpty()){
+
+            MainActivity.saveMenuEnabled = false;
+        }else{
+            MainActivity.saveMenuEnabled = true;
+        }
+        if (SLEEPING_ID == -1) {
+            MainActivity.deleteMenuEnabled = false;
+        } else {
+            MainActivity.deleteMenuEnabled = true;
+        }
     }
 
-    public void validateInputs() {
-        if(saveMenuItem != null) {
-            if(!activityDate.getText().toString().isEmpty() &
-                    !activityTime.getText().toString().isEmpty() &
-                    !sleepingDuration.getText().toString().isEmpty()){
-
-                saveMenuItem.setEnabled(true);
-                saveMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "save enabled");
-            }else{
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "save disabled");
-            }
-        }
-        if(deleteMenuItem != null) {
-            if (SLEEPING_ID != -1) {
-                deleteMenuItem.setEnabled(true);
-                deleteMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "delete enabled");
-            } else {
-                deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "delete disabled");
-            }
-        }
+    public void updateMenuVisibility(){
+        validateInputs();
         ActivityCompat.invalidateOptionsMenu(getActivity());
     }
 
@@ -270,17 +268,17 @@ public class SleepingFragment extends Fragment {
         if(SLEEPING_ID == -1) {
             SLEEPING_ID = AppContract.SleepingEntry.getIdFromUri(getActivity().getContentResolver().insert(uri, newValues));
             if(SLEEPING_ID == -1){
-                Toast.makeText(getActivity(), "Could not save sleep entry", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_entry_cannot_save) + TITLE_SLEEPING, Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getActivity(), "Sleep entry added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), TITLE_SLEEPING + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
             }
         }else{
             String sWhere = AppContract.SleepingEntry.COLUMN_USER_ID + " = ? AND " + AppContract.SleepingEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.SleepingEntry._ID + " = ?";
             String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(SLEEPING_ID)};
             getActivity().getContentResolver().update(uri, newValues, sWhere,sWhereArgs);
-            Toast.makeText(getActivity(), "Sleep entry saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), TITLE_SLEEPING + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
         }
-        goBack();
+        goFinish();
     }
 
     public void actionDelete(){
@@ -290,14 +288,13 @@ public class SleepingFragment extends Fragment {
         String sWhere = AppContract.SleepingEntry.COLUMN_USER_ID + " = ? AND " + AppContract.SleepingEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.SleepingEntry._ID + " = ?";
         String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(SLEEPING_ID)};
         getActivity().getContentResolver().delete(uri, sWhere, sWhereArgs);
-        Toast.makeText(getActivity(), "Sleep entry deleted", Toast.LENGTH_LONG).show();
-        SLEEPING_ID = -1;
-        goBack();
+        Toast.makeText(getActivity(), TITLE_SLEEPING + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
+        goFinish();
     }
 
 
-    public void goBack(){
-        Log.v(TAG, "goBack");
+    public void goFinish(){
+        Log.v(TAG, "goFinish");
         SLEEPING_ID = -1;
         ((MainActivity) getActivity()).handleFragments(new ActivitiesFragment(),ActivitiesFragment.TAG,ActivitiesFragment.KEEP_IN_STACK);
         //((MainActivity) getActivity()).handleFragments(true);

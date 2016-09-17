@@ -7,7 +7,7 @@ import android.content.IntentSender;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -47,7 +48,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
     public static boolean ACTION_SIGN_SILENT = false;
     SignInButton signInButton;
     boolean mSignInProgress = false;
-
+    ProgressBar progressBar;
 
     private static final String[] USER_COLUMNS = {
             AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry._ID,
@@ -67,6 +68,9 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
 
         View rootView = inflater.inflate(R.layout.sign_in, container, false);
 
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        progressBar.setIndeterminate(true);
+        progressBar.setVisibility(View.VISIBLE);
         signInButton = (SignInButton) rootView.findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -74,6 +78,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                 Log.v(TAG,v.toString());
                 switch (v.getId()) {
                     case R.id.sign_in_button:
+                        progressBar.setVisibility(View.VISIBLE);
                         signIn();
                         break;
                     // ...
@@ -138,13 +143,14 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        Toast.makeText(getActivity(), "Sign Out successful", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getString(R.string.text_sign_out_success), Toast.LENGTH_LONG).show();
                         MainActivity.USER_LOGGED_IN = false;
                         MainActivity.LOGGED_IN_USER_ID = null;
                         signInButton.setEnabled(true);
                         ActivityCompat.invalidateOptionsMenu(getActivity());
                         ACTION_SIGN_OUT = false;
                         updateActiveUser(-1);
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }
@@ -154,10 +160,7 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
         mSignInProgress = true;
         signInButton.setEnabled(false);
 
-        Uri query_user_uri = AppContract.UserEntry.CONTENT_URI;
-        String sSelection = AppContract.UserEntry.TABLE_NAME + "." + AppContract.UserEntry.COLUMN_ACTIVE + " = ? ";
-        String[] sSelectionArgs = new String[]{Long.toString(ACTIVE)};
-        Cursor userCursor = getActivity().getContentResolver().query(query_user_uri,USER_COLUMNS,sSelection,sSelectionArgs,null);
+        Cursor userCursor = new Utilities(getActivity()).getSavedActiveUser();
 
         if(userCursor!=null) {
             if (userCursor.getCount() == 1) {
@@ -211,20 +214,21 @@ public class SignInFragment extends Fragment implements GoogleApiClient.Connecti
                     ((MainActivity) getActivity()).handleFragments(new BabyFragment(), BabyFragment.TAG, BabyFragment.KEEP_IN_STACK);
                 }
             }else{
-                Toast.makeText(getActivity(), "Could not get email Id.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_sign_in_failed), Toast.LENGTH_LONG).show();
             }
 
         } else {
 
-            if(!new Utilities(getActivity()).isInternetOn() & ACTION_SIGN_SILENT) {
+            if(!new Utilities(getActivity()).isInternetOn() & !ACTION_SIGN_OUT) {
                 offlineSignIn();
             }
             if(!MainActivity.USER_LOGGED_IN) {
                 signInButton.setEnabled(true);
                 MainActivity.USER_LOGGED_IN = false;
                 ActivityCompat.invalidateOptionsMenu(getActivity());
+                progressBar.setVisibility(View.GONE);
                 if (!ACTION_SIGN_SILENT) {
-                    Toast.makeText(getActivity(), "Sign In not successful", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.text_sign_in_failed), Toast.LENGTH_LONG).show();
                 }
             }
         }

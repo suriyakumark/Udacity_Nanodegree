@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/feeding_layout"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="beforeDescendants"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
-    android:background="@color/colorAccentLight">
-
-    <include layout="@layout/date_time" />
-
-    <Spinner
-        android:id="@+id/feeding_type"
+    android:layout_height="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/feeding_layout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:entries="@array/spinner_feeding_type"
-        android:prompt="@string/text_feeding_type" />
+        android:layout_height="match_parent"
+        android:contentDescription="@string/cd_feeding"
+        android:background="@color/colorAccentLight">
 
-    <EditText
-        android:id="@+id/feeding_quantity"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:maxLines="2"
-        android:hint="@string/text_feeding_qty" />
+        <include layout="@layout/date_time" />
 
-    <include layout="@layout/notes" />
+        <Spinner
+            android:id="@+id/feeding_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:contentDescription="@string/cd_feeding_type"
+            android:entries="@array/spinner_feeding_type"
+            android:prompt="@string/text_feeding_type" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/feeding_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_summary_height"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginBottom="@dimen/margin_medium"
+            android:paddingStart="@dimen/padding_text"
+            android:paddingEnd="@dimen/padding_text"
+            android:maxLines="2"
+            android:contentDescription="@string/cd_feeding_qty"
+            android:hint="@string/text_feeding_qty" />
+
+        <include layout="@layout/notes" />
+
+    </LinearLayout>
+</ScrollView>

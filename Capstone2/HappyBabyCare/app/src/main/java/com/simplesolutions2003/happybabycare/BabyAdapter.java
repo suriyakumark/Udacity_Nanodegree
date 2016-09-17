@@ -108,13 +108,20 @@ public class BabyAdapter extends CursorAdapter implements View.OnClickListener {
             viewHolder.babySelect.setOnClickListener(this);
             if(cursor.getLong(BabyFragment.COL_BABY_ID) == MainActivity.ACTIVE_BABY_ID){
                 viewHolder.babySelect.setImageDrawable(context.getDrawable(R.drawable.select_icon_active));
+                viewHolder.babySelect.setContentDescription(context.getString(R.string.cd_selected));
             }else{
                 viewHolder.babySelect.setImageDrawable(context.getDrawable(R.drawable.select_icon_default));
+                viewHolder.babySelect.setContentDescription(context.getString(R.string.cd_not_selected));
             }
 
             viewHolder.babyEdit.setTag(new String[]{Long.toString(cursor.getLong(BabyFragment.COL_BABY_ID)),
                     cursor.getString(BabyFragment.COL_BABY_NAME)});
             viewHolder.babyEdit.setOnClickListener(this);
+
+            viewHolder.babyName.setContentDescription(viewHolder.babyName.getText().toString());
+            viewHolder.babyBirthDate.setContentDescription(viewHolder.babyBirthDate.getText().toString());
+            viewHolder.babyGender.setContentDescription(viewHolder.babyGender.getText().toString());
+            viewHolder.babyEdit.setContentDescription(context.getString(R.string.cd_baby_icon_edit));
         }
 
     }

@@ -5,7 +5,10 @@
     <EditText
         android:id="@+id/activity_notes"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
+        android:layout_height="@dimen/article_notes_height"
+        android:paddingStart="@dimen/padding_text"
+        android:paddingEnd="@dimen/padding_text"
+        android:contentDescription="@string/cd_notes"
         android:maxLines="6"
-        android:hint="Notes" />
+        android:hint="@string/text_notes" />
 </LinearLayout>

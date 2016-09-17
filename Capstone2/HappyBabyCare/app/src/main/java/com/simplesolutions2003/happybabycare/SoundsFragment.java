@@ -2,9 +2,11 @@ package com.simplesolutions2003.happybabycare;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -27,6 +29,12 @@ public class SoundsFragment extends Fragment{
     MediaPlayer mp = new MediaPlayer();
 
     public SoundsFragment(){}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,6 +86,19 @@ public class SoundsFragment extends Fragment{
         return rootView;
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        ((MainActivity) getActivity()).disableActionEditMenus();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public void onResume()

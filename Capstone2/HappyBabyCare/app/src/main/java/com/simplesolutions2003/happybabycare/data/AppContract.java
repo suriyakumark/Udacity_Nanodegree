@@ -237,7 +237,6 @@ public class AppContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_BABY;
 
         public static final String TABLE_NAME = "baby";
-
         public static final String _ID = "_id";
         public static final String COLUMN_USER_ID = "user_id";
         public static final String COLUMN_NAME = "name";

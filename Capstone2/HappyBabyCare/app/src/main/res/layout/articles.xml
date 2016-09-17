@@ -5,6 +5,8 @@
         android:id="@+id/articles_layout"
         android:background="@color/colorAccentLight">
 
+    <include layout="@layout/empty_loading" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -12,8 +14,8 @@
         android:scrollbarStyle="outsideOverlay"
         android:clipToPadding="false"
         android:paddingTop="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:paddingRight="@dimen/activity_vertical_margin"
+        android:paddingStart="@dimen/activity_vertical_margin"
+        android:paddingEnd="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_horizontal_margin" />
 
 </LinearLayout>

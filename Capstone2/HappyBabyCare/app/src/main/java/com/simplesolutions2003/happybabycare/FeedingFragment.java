@@ -4,9 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,11 +28,8 @@ import com.simplesolutions2003.happybabycare.data.AppContract;
 public class FeedingFragment extends Fragment {
     public final static boolean KEEP_IN_STACK = false;
     public final static String TAG = FeedingFragment.class.getSimpleName();
-
+    public static final String TITLE_FEEDING = "Feeding";
     public static long FEEDING_ID = -1;
-
-    MenuItem saveMenuItem;
-    MenuItem deleteMenuItem;
 
     private static final String[] FEEDING_COLUMNS = {
             AppContract.FeedingEntry.TABLE_NAME + "." + AppContract.FeedingEntry._ID,
@@ -83,6 +81,13 @@ public class FeedingFragment extends Fragment {
         feedingType = (Spinner) rootView.findViewById(R.id.feeding_type);
         feedingQuantity = (EditText) rootView.findViewById(R.id.feeding_quantity);
 
+        activityDate.setInputType(InputType.TYPE_NULL);
+        activityTime.setInputType(InputType.TYPE_NULL);
+        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
+        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
+
+        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
+        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
 
         feedingQuantity.addTextChangedListener(new TextWatcher() {
 
@@ -98,7 +103,7 @@ public class FeedingFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                validateInputs();
+                updateMenuVisibility();
             }
         });
 
@@ -107,7 +112,7 @@ public class FeedingFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityDate);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -127,7 +132,7 @@ public class FeedingFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 new Utilities(getActivity()).resetFocus(activityTime);
-                validateInputs();
+                updateMenuVisibility();
             }
 
             @Override
@@ -141,10 +146,6 @@ public class FeedingFragment extends Fragment {
             }
         });
 
-        SetDateEditText setActivityDate = new SetDateEditText(activityDate, getActivity());
-        SetTimeEditText setActivityTime = new SetTimeEditText(activityTime, getActivity());
-        activityDate.setText(new Utilities(getActivity()).getCurrentDateDisp());
-        activityTime.setText(new Utilities(getActivity()).getCurrentTimeDB());
 
         if(FEEDING_ID != -1) {
             Uri uri = AppContract.FeedingEntry.buildFeedingUri(FEEDING_ID);
@@ -159,11 +160,17 @@ public class FeedingFragment extends Fragment {
                     for(int iType = 0; iType < feedingType.getCount(); iType++){
                         if(activityEntry.getString(COL_FEEDING_TYPE).equals(feedingType.getItemAtPosition(iType).toString())){
                             feedingType.setSelection(iType);
+                            feedingType.setContentDescription(activityEntry.getString(COL_FEEDING_TYPE));
                             break;
                         }
                     }
 
                     feedingQuantity.setText(activityEntry.getString(COL_FEEDING_QUANTITY));
+
+                    activityDate.setContentDescription(activityDate.getText().toString());
+                    activityTime.setContentDescription(activityTime.getText().toString());
+                    activityNotes.setContentDescription(activityNotes.getText().toString());
+                    feedingQuantity.setContentDescription(feedingQuantity.getText().toString());
                 }
             }else{
                 FEEDING_ID = -1;
@@ -177,66 +184,57 @@ public class FeedingFragment extends Fragment {
     public void onResume()
     {
         super.onResume();
-        ((MainActivity) getActivity()).updateToolbarTitle("Feeding - " + MainActivity.ACTIVE_BABY_NAME);
+        ((MainActivity) getActivity()).updateToolbarTitle(TITLE_FEEDING + " - " + MainActivity.ACTIVE_BABY_NAME);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.save_delete, menu);
-        saveMenuItem = (MenuItem)  menu.findItem(R.id.action_save);
-        deleteMenuItem = (MenuItem)  menu.findItem(R.id.action_delete);
+        super.onCreateOptionsMenu(menu,inflater);
+        validateInputs();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu){
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_save){
-            actionSave();
-            return true;
+        switch (id){
+            case R.id.action_save:
+                actionSave();
+                return true;
+            case R.id.action_delete:
+                if(FEEDING_ID != -1) {
+                    actionDelete();
+                }
+                return true;
+            default:
+                break;
         }
-        if(id == R.id.action_delete){
-            if(FEEDING_ID != -1) {
-                actionDelete();
-            }
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
+    public void validateInputs() {
+        if(activityDate.getText().toString().isEmpty() |
+                activityTime.getText().toString().isEmpty() |
+                feedingQuantity.getText().toString().isEmpty()){
+            MainActivity.saveMenuEnabled = false;
+        }else{
+            MainActivity.saveMenuEnabled = true;
+        }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu){
-        validateInputs();
-        super.onPrepareOptionsMenu(menu);
+        if (FEEDING_ID == -1) {
+            MainActivity.deleteMenuEnabled = false;
+        } else {
+            MainActivity.deleteMenuEnabled = true;
+        }
+
     }
 
-    public void validateInputs() {
-        if(saveMenuItem != null) {
-            if(!activityDate.getText().toString().isEmpty() &
-                    !activityTime.getText().toString().isEmpty() &
-                    !feedingQuantity.getText().toString().isEmpty()){
-
-                saveMenuItem.setEnabled(true);
-                saveMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "save enabled");
-            }else{
-                saveMenuItem.setEnabled(false);
-                saveMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "save disabled");
-            }
-        }
-        if(deleteMenuItem != null) {
-            if (FEEDING_ID != -1) {
-                deleteMenuItem.setEnabled(true);
-                deleteMenuItem.getIcon().setAlpha(255);
-                Log.v(TAG, "delete enabled");
-            } else {
-                deleteMenuItem.setEnabled(false);
-                deleteMenuItem.getIcon().setAlpha(100);
-                Log.v(TAG, "delete disabled");
-            }
-        }
+    public void updateMenuVisibility(){
+        validateInputs();
         ActivityCompat.invalidateOptionsMenu(getActivity());
     }
 
@@ -256,17 +254,17 @@ public class FeedingFragment extends Fragment {
         if(FEEDING_ID == -1) {
             FEEDING_ID = AppContract.FeedingEntry.getIdFromUri(getActivity().getContentResolver().insert(uri, newValues));
             if(FEEDING_ID == -1){
-                Toast.makeText(getActivity(), "Could not save feeding entry", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.text_entry_cannot_save) + TITLE_FEEDING, Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getActivity(), "Feeding entry added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), TITLE_FEEDING + getString(R.string.text_entry_added), Toast.LENGTH_LONG).show();
             }
         }else{
             String sWhere = AppContract.FeedingEntry.COLUMN_USER_ID + " = ? AND " + AppContract.FeedingEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.FeedingEntry._ID + " = ?";
             String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(FEEDING_ID)};
             getActivity().getContentResolver().update(uri, newValues, sWhere,sWhereArgs);
-            Toast.makeText(getActivity(), "Feeding entry saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), TITLE_FEEDING + getString(R.string.text_entry_saved), Toast.LENGTH_LONG).show();
         }
-        goBack();
+        goFinish();
     }
 
     public void actionDelete(){
@@ -276,14 +274,13 @@ public class FeedingFragment extends Fragment {
         String sWhere = AppContract.FeedingEntry.COLUMN_USER_ID + " = ? AND " + AppContract.FeedingEntry.COLUMN_BABY_ID + " = ? AND " + AppContract.FeedingEntry._ID + " = ?";
         String[] sWhereArgs = new String[]{MainActivity.LOGGED_IN_USER_ID,Long.toString(MainActivity.ACTIVE_BABY_ID),Long.toString(FEEDING_ID)};
         getActivity().getContentResolver().delete(uri, sWhere, sWhereArgs);
-        Toast.makeText(getActivity(), "Feeding entry deleted", Toast.LENGTH_LONG).show();
-        FEEDING_ID = -1;
-        goBack();
+        Toast.makeText(getActivity(),TITLE_FEEDING + getString(R.string.text_entry_deleted), Toast.LENGTH_LONG).show();
+        goFinish();
     }
 
 
-    public void goBack(){
-        Log.v(TAG, "goBack");
+    public void goFinish(){
+        Log.v(TAG, "goFinish");
         FEEDING_ID = -1;
         ((MainActivity) getActivity()).handleFragments(new ActivitiesFragment(),ActivitiesFragment.TAG,ActivitiesFragment.KEEP_IN_STACK);
         //((MainActivity) getActivity()).handleFragments(true);

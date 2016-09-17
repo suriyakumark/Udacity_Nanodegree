@@ -1,18 +1,20 @@
 package com.simplesolutions2003.happybabycare;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.simplesolutions2003.happybabycare.data.AppContract;
 
@@ -29,6 +31,7 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     public static long ARTICLE_ID = -1;
     public static String ARTICLE_TITLE = "";
     ListView articleDetailListView;
+    public static TextView articleDetailTitle;
 
     private static final String[] ARTICLE_COLUMNS = {
             AppContract.ArticleEntry.TABLE_NAME + "." + AppContract.ArticleEntry._ID,
@@ -55,15 +58,36 @@ public class ArticleDetailFragment extends Fragment implements LoaderManager.Loa
     public ArticleDetailFragment(){}
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        dPosition = 0;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.article_detail, container, false);
         articleDetailListView = (ListView) rootView.findViewById(R.id.article_detail_listview);
-
+        articleDetailTitle = (TextView) rootView.findViewById(R.id.article_detail_title);
         articleDetailListAdapter = new ArticleDetailAdapter(getActivity(),null,0);
         articleDetailListView.setAdapter(articleDetailListAdapter);
         return rootView;
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.v(TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu,inflater);
+        ((MainActivity) getActivity()).disableActionEditMenus();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.v(TAG, "onPrepareOptionsMenu");
+        super.onPrepareOptionsMenu(menu);
     }
 
     public void onResume()
